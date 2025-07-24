@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // Simulasi database untuk provider
-let providers = [
+// Mengekspor variabel providers agar dapat diimpor oleh file lain
+export let providers = [
   {
     id: 1,
     name: "Dr. Sarah Johnson",

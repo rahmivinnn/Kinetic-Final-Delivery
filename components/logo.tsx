@@ -20,7 +20,10 @@ export function Logo({ className, size = 60, href = "/" }: LogoProps) {
           objectFit: "contain",
           objectPosition: "center",
           maxWidth: "100%",
+          maxHeight: "100%",
+          width: "auto",
           height: "auto",
+          aspectRatio: "1/1"
         }}
         priority
       />

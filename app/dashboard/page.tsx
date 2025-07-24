@@ -238,8 +238,12 @@ export default function DashboardPage() {
               height={60}
               style={{
                 objectFit: "contain",
+                objectPosition: "center",
                 maxWidth: "100%",
-                height: "auto"
+                maxHeight: "100%",
+                width: "auto",
+                height: "auto",
+                aspectRatio: "1/1"
               }}
             />
           </div>

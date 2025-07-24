@@ -81,8 +81,23 @@ export default function MetricDetailPage({ params }: { params: { metric: string 
       {/* Sidebar */}
       <div className="w-[78px] bg-gradient-to-b from-[#001a41] to-[#003366] flex flex-col items-center py-6">
         <div className="mb-8">
-          <Image src="/kinetic-logo.png" alt="Kinetic Logo" width={40} height={40} />
-          
+          <div className="w-[60px] h-[60px] flex items-center justify-center">
+            <Image 
+              src="/kinetic-logo.png" 
+              alt="Kinetic Logo" 
+              width={60} 
+              height={60}
+              style={{
+                objectFit: "contain",
+                objectPosition: "center",
+                maxWidth: "100%",
+                maxHeight: "100%",
+                width: "auto",
+                height: "auto",
+                aspectRatio: "1/1"
+              }}
+            />
+          </div>
         </div>
 
         <nav className="flex flex-col items-center space-y-6 flex-1">

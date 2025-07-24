@@ -285,16 +285,20 @@ export default function VideoLibraryPage() {
       {/* Sidebar */}
       <div className="w-[78px] bg-gradient-to-b from-[#001a41] to-[#003366] flex flex-col items-center py-6">
         <div className="mb-8">
-          <div className="w-[40px] h-[40px] flex items-center justify-center">
+          <div className="w-[60px] h-[60px] flex items-center justify-center">
             <Image 
               src="/kinetic-logo.png" 
               alt="Kinetic Logo" 
-              width={40} 
-              height={40}
+              width={60} 
+              height={60}
               style={{
                 objectFit: "contain",
+                objectPosition: "center",
                 maxWidth: "100%",
-                height: "auto"
+                maxHeight: "100%",
+                width: "auto",
+                height: "auto",
+                aspectRatio: "1/1"
               }}
             />
           </div>
