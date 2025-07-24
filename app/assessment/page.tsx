@@ -212,7 +212,7 @@ export default function AssessmentPage() {
                 </Button>
               </Link>
               <Link href="/personalized-plan">
-                <Button className="bg-[#111827] hover:bg-[#1f2937]">Submit Assessment</Button>
+                <Button type="submit" className="bg-[#111827] hover:bg-[#1f2937]">Submit Assessment</Button>
               </Link>
             </div>
           </form>

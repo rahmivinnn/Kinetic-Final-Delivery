@@ -57,7 +57,7 @@ export default function RecoveryJourneyPage() {
                 bridges home exercises with clinical expertise for a smoother, faster recovery experience.
               </p>
               <div className="flex flex-wrap gap-4">
-                <Link href="/assessment">
+                <Link href="/personalized-plan">
                   <Button className="bg-[#111827] hover:bg-[#1f2937]">Start Your Recovery Journey</Button>
                 </Link>
                 <Link href="/?showDemo=true">

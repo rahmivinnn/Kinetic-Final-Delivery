@@ -217,16 +217,16 @@ export default function ProviderDashboardPage() {
             <Home className="w-5 h-5" />
           </Link>
           <Link
-            href="/exercises"
+            href="/dashboard/provider/patients"
             className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
           >
-            <Activity className="w-5 h-5" />
+            <Users className="w-5 h-5" />
           </Link>
           <Link
             href="/appointments"
             className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
           >
-            <Users className="w-5 h-5" />
+            <Calendar className="w-5 h-5" />
           </Link>
           <Link
             href="/messages"
@@ -235,13 +235,13 @@ export default function ProviderDashboardPage() {
             <MessageSquare className="w-5 h-5" />
           </Link>
           <Link
-            href="/progress"
+            href="/analytics"
             className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
           >
             <BarChart2 className="w-5 h-5" />
           </Link>
           <Link
-            href="/video-library"
+            href="/reports"
             className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
           >
             <FileText className="w-5 h-5" />
@@ -567,50 +567,122 @@ export default function ProviderDashboardPage() {
 
             {/* Right Column */}
             <div className="space-y-6">
-              {/* Performance Metrics */}
+              {/* Performance Analytics */}
               <Card>
                 <CardHeader className="pb-3">
                   <div className="flex justify-between items-center">
-                    <CardTitle>Performance Metrics</CardTitle>
-                    <Link href="/progress/provider">
-                      <Button variant="ghost" className="h-8 text-[#014585]">
-                        Details
+                    <CardTitle>Performance Analytics</CardTitle>
+                    <div className="flex space-x-2">
+                      <Button variant="ghost" size="sm" className="h-8 text-xs">
+                        Weekly
                       </Button>
-                    </Link>
+                      <Button variant="ghost" size="sm" className="h-8 text-xs bg-blue-50">
+                        Monthly
+                      </Button>
+                      <Button variant="ghost" size="sm" className="h-8 text-xs">
+                        Quarterly
+                      </Button>
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    {performanceMetrics.map((metric) => (
-                      <div key={metric.id} className="flex items-center justify-between">
+                  <div className="space-y-6">
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
                         <div>
-                          <h3 className="text-sm font-medium text-gray-900">{metric.name}</h3>
-                          <div className="flex items-center">
-                            <span className="text-xl font-semibold mr-1">
-                              {metric.value}
-                              {metric.unit || ""}
-                            </span>
-                            {metric.total && <span className="text-xs text-gray-500">/ {metric.total}</span>}
-                          </div>
+                          <h3 className="text-sm font-medium text-gray-900">Patient Satisfaction</h3>
+                          <p className="text-2xl font-bold">{performanceMetrics[0].value}{performanceMetrics[0].unit || ""}%</p>
                         </div>
-                        <div
-                          className={`flex items-center ${
-                            metric.trend === "up"
-                              ? metric.name === "Avg. Treatment Duration"
-                                ? "text-red-500"
-                                : "text-green-500"
-                              : metric.name === "Avg. Treatment Duration"
-                                ? "text-green-500"
-                                : "text-red-500"
-                          }`}
-                        >
-                          <span className="text-lg font-medium">{metric.change}</span>
-                          <ArrowRight
-                            className={`h-4 w-4 ml-1 ${metric.trend === "up" ? "rotate-[-45deg]" : "rotate-45deg"}`}
-                          />
+                        <div className="flex flex-col items-end">
+                          <div className="flex items-center text-green-600 mb-1">
+                            <ArrowRight className="h-4 w-4 mr-1 rotate-[-45deg]" />
+                            <span>{performanceMetrics[0].change}</span>
+                          </div>
+                          <span className="text-xs text-gray-500">vs last month</span>
                         </div>
                       </div>
-                    ))}
+                      <div className="w-full h-10 bg-gray-100 rounded-md overflow-hidden">
+                        <div className="flex h-full">
+                          <div className="bg-green-500 h-full" style={{ width: '35%' }}></div>
+                          <div className="bg-green-400 h-full" style={{ width: '40%' }}></div>
+                          <div className="bg-green-300 h-full" style={{ width: '15%' }}></div>
+                          <div className="bg-gray-200 h-full" style={{ width: '10%' }}></div>
+                        </div>
+                      </div>
+                      <div className="flex justify-between mt-1 text-xs text-gray-500">
+                        <span>Very Satisfied (35%)</span>
+                        <span>Satisfied (40%)</span>
+                        <span>Neutral (15%)</span>
+                        <span>Other (10%)</span>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <div>
+                          <h3 className="text-sm font-medium text-gray-900">Recovery Rate</h3>
+                          <p className="text-2xl font-bold">{performanceMetrics[1].value}{performanceMetrics[1].unit || ""}%</p>
+                        </div>
+                        <div className="flex flex-col items-end">
+                          <div className="flex items-center text-green-600 mb-1">
+                            <ArrowRight className="h-4 w-4 mr-1 rotate-[-45deg]" />
+                            <span>{performanceMetrics[1].change}</span>
+                          </div>
+                          <span className="text-xs text-gray-500">vs last month</span>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-4 gap-2">
+                        <div className="bg-blue-50 p-2 rounded-md">
+                          <div className="text-xs text-gray-500">Knee</div>
+                          <div className="text-sm font-medium">92%</div>
+                        </div>
+                        <div className="bg-blue-50 p-2 rounded-md">
+                          <div className="text-xs text-gray-500">Shoulder</div>
+                          <div className="text-sm font-medium">87%</div>
+                        </div>
+                        <div className="bg-blue-50 p-2 rounded-md">
+                          <div className="text-xs text-gray-500">Back</div>
+                          <div className="text-sm font-medium">78%</div>
+                        </div>
+                        <div className="bg-blue-50 p-2 rounded-md">
+                          <div className="text-xs text-gray-500">Ankle</div>
+                          <div className="text-sm font-medium">85%</div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <div>
+                          <h3 className="text-sm font-medium text-gray-900">Avg. Treatment Duration</h3>
+                          <p className="text-2xl font-bold">{performanceMetrics[2].value}{performanceMetrics[2].unit || ""}</p>
+                        </div>
+                        <div className="flex flex-col items-end">
+                          <div className="flex items-center text-green-600 mb-1">
+                            <ArrowRight className="h-4 w-4 mr-1 rotate-45deg" />
+                            <span>{performanceMetrics[2].change}</span>
+                          </div>
+                          <span className="text-xs text-gray-500">vs last month</span>
+                        </div>
+                      </div>
+                      <div className="relative pt-1">
+                        <div className="flex items-center justify-between mb-2">
+                          <div>
+                            <span className="text-xs font-semibold inline-block text-blue-600">
+                              Current Average
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-xs font-semibold inline-block text-gray-500">
+                              Industry Average: 10.2 weeks
+                            </span>
+                          </div>
+                        </div>
+                        <div className="overflow-hidden h-2 text-xs flex rounded bg-gray-200">
+                          <div style={{ width: `${(performanceMetrics[2].value / 12) * 100}%` }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500"></div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -664,18 +736,18 @@ export default function ProviderDashboardPage() {
                 </CardContent>
               </Card>
 
-              {/* OpenPose AI Analysis */}
+              {/* Data Analysis Dashboard */}
               <Card className="overflow-hidden">
-                <CardHeader className="pb-3 bg-gradient-to-r from-[#7e58f4] to-[#5a3dc8] text-white">
+                <CardHeader className="pb-3 bg-gradient-to-r from-[#014585] to-[#003366] text-white">
                   <div className="flex justify-between items-center">
-                    <CardTitle>OpenPose AI Analysis</CardTitle>
+                    <CardTitle>Data Analysis Dashboard</CardTitle>
                     <Button 
                       variant="secondary" 
                       size="sm" 
-                      className="bg-white text-[#7e58f4] hover:bg-purple-100"
+                      className="bg-white text-[#014585] hover:bg-blue-100"
                       onClick={handleStartPoseSession}
                     >
-                      View Tool
+                      View Full Analytics
                     </Button>
                   </div>
                 </CardHeader>
@@ -683,29 +755,49 @@ export default function ProviderDashboardPage() {
                   <div className="relative aspect-video bg-gray-900">
                     <Image
                       src="/movement-intelligence.png"
-                      alt="OpenPose Analysis"
+                      alt="Data Analysis Dashboard"
                       fill
                       className="object-cover opacity-80"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-4">
-                      <h3 className="text-white font-medium mb-1">Patient Movement Analysis</h3>
-                      <p className="text-white/80 text-sm">Track patient progress with AI-powered movement analysis</p>
+                      <h3 className="text-white font-medium mb-1">Patient Movement Analytics</h3>
+                      <p className="text-white/80 text-sm">Comprehensive data analysis for patient rehabilitation progress</p>
                     </div>
                   </div>
                   <div className="p-4">
                     <div className="flex justify-between items-center mb-3">
-                      <h4 className="font-medium text-gray-900">Recent Patient Analyses</h4>
+                      <h4 className="font-medium text-gray-900">Performance Metrics</h4>
                       <span className="text-xs text-gray-500">Last updated: Today</span>
                     </div>
+                    <div className="grid grid-cols-2 gap-3 mb-3">
+                      <div className="p-2 bg-blue-50 rounded-lg">
+                        <div className="text-xs text-gray-500 mb-1">Form Accuracy</div>
+                        <div className="text-lg font-semibold text-[#014585]">78%</div>
+                        <div className="text-xs text-green-600">↑ 6% from last week</div>
+                      </div>
+                      <div className="p-2 bg-blue-50 rounded-lg">
+                        <div className="text-xs text-gray-500 mb-1">Range of Motion</div>
+                        <div className="text-lg font-semibold text-[#014585]">65%</div>
+                        <div className="text-xs text-green-600">↑ 5% from last week</div>
+                      </div>
+                    </div>
+                    <h4 className="font-medium text-gray-900 mb-3">Recent Patient Analyses</h4>
                     <div className="space-y-3">
                       <div className="flex items-center justify-between text-sm p-2 bg-gray-50 rounded-lg">
                         <div className="flex items-center">
                           <div className="w-6 h-6 bg-gray-200 rounded-full mr-2 flex items-center justify-center overflow-hidden">
                             <Image src="/athletic-man-short-hair.png" alt="Patient" width={24} height={24} />
                           </div>
-                          <span>John D.</span>
+                          <div>
+                            <span className="font-medium">John D.</span>
+                            <div className="text-xs text-gray-500">Knee Rehabilitation</div>
+                          </div>
                         </div>
                         <div className="flex items-center">
+                          <div className="text-right mr-3">
+                            <div className="text-xs font-medium">Score: 82/100</div>
+                            <div className="text-xs text-green-600">↑ 8 points</div>
+                          </div>
                           <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">Completed</span>
                         </div>
                       </div>
@@ -714,56 +806,158 @@ export default function ProviderDashboardPage() {
                           <div className="w-6 h-6 bg-gray-200 rounded-full mr-2 flex items-center justify-center overflow-hidden">
                             <Image src="/smiling-brown-haired-woman.png" alt="Patient" width={24} height={24} />
                           </div>
-                          <span>Sarah M.</span>
+                          <div>
+                            <span className="font-medium">Sarah M.</span>
+                            <div className="text-xs text-gray-500">Shoulder Recovery</div>
+                          </div>
                         </div>
                         <div className="flex items-center">
+                          <div className="text-right mr-3">
+                            <div className="text-xs font-medium">Progress: 65%</div>
+                            <div className="text-xs text-amber-600">Session 2/5</div>
+                          </div>
                           <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">In Progress</span>
                         </div>
                       </div>
+                      <div className="flex items-center justify-between text-sm p-2 bg-gray-50 rounded-lg">
+                        <div className="flex items-center">
+                          <div className="w-6 h-6 bg-gray-200 rounded-full mr-2 flex items-center justify-center overflow-hidden">
+                            <Image src="/older-man-glasses.png" alt="Patient" width={24} height={24} />
+                          </div>
+                          <div>
+                            <span className="font-medium">Robert K.</span>
+                            <div className="text-xs text-gray-500">Lower Back Assessment</div>
+                          </div>
+                        </div>
+                        <div className="flex items-center">
+                          <div className="text-right mr-3">
+                            <div className="text-xs font-medium">Scheduled</div>
+                            <div className="text-xs text-gray-500">Tomorrow, 10:00 AM</div>
+                          </div>
+                          <span className="text-xs bg-gray-100 text-gray-800 px-2 py-0.5 rounded-full">Pending</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-4">
+                      <Button variant="outline" className="w-full text-[#014585] border-[#014585] hover:bg-blue-50">
+                        View All Patient Analytics
+                      </Button>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Quick Links */}
+              {/* Patient Analytics Dashboard */}
               <Card>
                 <CardHeader className="pb-3">
-                  <CardTitle>Quick Links</CardTitle>
+                  <div className="flex justify-between items-center">
+                    <CardTitle>Patient Analytics Dashboard</CardTitle>
+                    <div className="w-[120px] h-8 text-xs border rounded-md px-3 py-1">
+                      <select className="w-full bg-transparent outline-none">
+                        <option value="day">Today</option>
+                        <option value="week" selected>This Week</option>
+                        <option value="month">This Month</option>
+                        <option value="quarter">This Quarter</option>
+                      </select>
+                    </div>
+                  </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-2">
-                    <Button
-                      variant="outline"
-                      className="w-full justify-between text-[#7e58f4] hover:text-[#5a3dc8] bg-purple-50"
-                      onClick={handleStartPoseSession}
-                    >
-                      OpenPose AI Analysis
-                      <Camera className="ml-2 h-4 w-4" />
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      className="w-full justify-between text-[#014585] hover:text-[#013a70]"
-                      onClick={handleOpenLibrary}
-                    >
-                      Exercise Library
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      className="w-full justify-between text-[#014585] hover:text-[#013a70]"
-                      onClick={handlePatientReports}
-                    >
-                      Patient Reports
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      className="w-full justify-between text-[#014585] hover:text-[#013a70]"
-                      onClick={handleScheduleManagement}
-                    >
-                      Schedule Management
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
+                  <div className="space-y-4">
+                    {/* Treatment Effectiveness */}
+                    <div>
+                      <h3 className="text-sm font-medium mb-2">Treatment Effectiveness by Condition</h3>
+                      <div className="bg-gray-50 p-3 rounded-lg">
+                        <div className="space-y-3">
+                          <div>
+                            <div className="flex justify-between text-xs mb-1">
+                              <span>Knee Rehabilitation</span>
+                              <span className="font-medium">87%</span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div className="bg-green-500 h-2 rounded-full" style={{ width: '87%' }}></div>
+                            </div>
+                          </div>
+                          <div>
+                            <div className="flex justify-between text-xs mb-1">
+                              <span>Shoulder Recovery</span>
+                              <span className="font-medium">76%</span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div className="bg-green-500 h-2 rounded-full" style={{ width: '76%' }}></div>
+                            </div>
+                          </div>
+                          <div>
+                            <div className="flex justify-between text-xs mb-1">
+                              <span>Lower Back Pain</span>
+                              <span className="font-medium">65%</span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div className="bg-amber-500 h-2 rounded-full" style={{ width: '65%' }}></div>
+                            </div>
+                          </div>
+                          <div>
+                            <div className="flex justify-between text-xs mb-1">
+                              <span>Ankle Sprain</span>
+                              <span className="font-medium">92%</span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div className="bg-green-500 h-2 rounded-full" style={{ width: '92%' }}></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Patient Engagement */}
+                    <div>
+                      <h3 className="text-sm font-medium mb-2">Patient Engagement Metrics</h3>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="bg-blue-50 p-3 rounded-lg">
+                          <div className="text-xs text-gray-500 mb-1">Exercise Adherence</div>
+                          <div className="text-lg font-semibold text-[#014585]">78%</div>
+                          <div className="text-xs text-green-600">↑ 5% from last period</div>
+                        </div>
+                        <div className="bg-blue-50 p-3 rounded-lg">
+                          <div className="text-xs text-gray-500 mb-1">Session Completion</div>
+                          <div className="text-lg font-semibold text-[#014585]">92%</div>
+                          <div className="text-xs text-green-600">↑ 3% from last period</div>
+                        </div>
+                        <div className="bg-blue-50 p-3 rounded-lg">
+                          <div className="text-xs text-gray-500 mb-1">App Usage</div>
+                          <div className="text-lg font-semibold text-[#014585]">4.2 days/week</div>
+                          <div className="text-xs text-amber-600">↓ 0.3 from last period</div>
+                        </div>
+                        <div className="bg-blue-50 p-3 rounded-lg">
+                          <div className="text-xs text-gray-500 mb-1">Feedback Rate</div>
+                          <div className="text-lg font-semibold text-[#014585]">85%</div>
+                          <div className="text-xs text-green-600">↑ 7% from last period</div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Quick Actions */}
+                    <div>
+                      <h3 className="text-sm font-medium mb-2">Quick Actions</h3>
+                      <div className="grid grid-cols-2 gap-3">
+                        <Button 
+                          variant="outline" 
+                          className="h-auto py-3 px-3 flex items-center justify-center space-x-2 text-[#014585] hover:bg-blue-50 hover:text-[#013a70]"
+                          onClick={handlePatientReports}
+                        >
+                          <FileText className="h-4 w-4 mr-2" />
+                          <span>Generate Reports</span>
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          className="h-auto py-3 px-3 flex items-center justify-center space-x-2 text-[#014585] hover:bg-blue-50 hover:text-[#013a70]"
+                          onClick={handleStartPoseSession}
+                        >
+                          <Camera className="h-4 w-4 mr-2" />
+                          <span>New Analysis</span>
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>

@@ -494,7 +494,7 @@ export default function ClientDashboardPage() {
       localStorage.setItem("recovery_journey", JSON.stringify(journeyData));
       
       setShowNotification(false);
-      router.push("/recovery-journey");
+      router.push("/personalized-plan");
     }, 1200);
   };
 
@@ -541,10 +541,101 @@ export default function ClientDashboardPage() {
   }, [user]);
 
   return (
-    <div className="flex-1 overflow-auto bg-[#f0f4f9]">
-      {showNotification && <NotificationSystem message={notificationMessage} />}
-      
-      <div className="p-8">
+    <div className="flex h-screen bg-[#f0f4f9]">
+      {/* Sidebar */}
+      <div className="w-[78px] bg-gradient-to-b from-[#53d08a] to-[#3fb370] flex flex-col items-center py-6">
+        <div className="mb-8">
+          <div className="w-[60px] h-[60px] flex items-center justify-center">
+            <Image 
+              src="/kinetic-logo.png" 
+              alt="Kinetic Logo" 
+              width={60} 
+              height={60}
+              style={{
+                objectFit: "contain",
+                objectPosition: "center",
+                maxWidth: "100%",
+                maxHeight: "100%",
+                width: "auto",
+                height: "auto",
+                aspectRatio: "1/1"
+              }}
+            />
+          </div>
+        </div>
+
+        <nav className="flex flex-col items-center space-y-6 flex-1">
+          <Link
+            href="/dashboard/client"
+            className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white"
+          >
+            <Home className="w-5 h-5" />
+          </Link>
+          <Link
+            href="/exercises"
+            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
+          >
+            <Activity className="w-5 h-5" />
+          </Link>
+          <Link
+            href="/appointments"
+            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
+          >
+            <Calendar className="w-5 h-5" />
+          </Link>
+          <Link
+            href="/messages"
+            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
+          >
+            <MessageSquare className="w-5 h-5" />
+          </Link>
+          <Link
+            href="/progress"
+            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
+          >
+            <BarChart2 className="w-5 h-5" />
+          </Link>
+          <Link
+            href="/video-library"
+            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
+          >
+            <Video className="w-5 h-5" />
+          </Link>
+          <Link
+            href="/pose-estimation"
+            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
+          >
+            <Camera className="w-5 h-5" />
+          </Link>
+        </nav>
+
+        <div className="mt-auto flex flex-col items-center space-y-6">
+          <Link
+            href="/profile"
+            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
+          >
+            <User className="w-5 h-5" />
+          </Link>
+          <Link
+            href="/settings"
+            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
+          >
+            <Settings className="w-5 h-5" />
+          </Link>
+          <button
+            onClick={logout}
+            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
+          >
+            <LogOut className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 overflow-auto">
+        {showNotification && <NotificationSystem message={notificationMessage} />}
+        
+        <div className="p-8">
         {/* Welcome Section */}
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-[#111827]">Welcome back, {user?.name || "Alex"}</h1>

@@ -131,7 +131,7 @@ export default function Home() {
                 </p>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row animate-fadeIn delay-300">
                   <Button 
-                    onClick={() => window.location.href = '/recovery-journey'}
+                    onClick={() => window.location.href = '/personalized-plan'}
                     className="bg-[#001a41] text-white hover:bg-[#001a41]/90 hover:scale-105 transition-transform duration-300"
                   >
                     Start Your Recovery Journey
