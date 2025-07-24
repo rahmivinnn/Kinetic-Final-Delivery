@@ -1305,3 +1305,17 @@ export default function AdminSettingsPage() {
                             value={[securitySettings.passwordExpiry]}
                             onValueChange={(value) => handleSecuritySettingChange('passwordExpiry', value[0])}
                           />
+                          <p className="text-xs text-gray-500">Days until password must be changed</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
+    </div>
+  );
+}
