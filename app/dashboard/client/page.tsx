@@ -426,12 +426,6 @@ export default function ClientDashboardPage() {
       router.push("/physiotherapy");
     }, 1000);
   };
-      localStorage.setItem(`progress_${metricId}`, JSON.stringify(progressData));
-      
-      setShowNotification(false);
-      router.push(`/progress/${metricId}`);
-    }, 1200);
-  };
 
   // Handler for viewing medication details
   const handleViewMedication = (medicationId) => {
