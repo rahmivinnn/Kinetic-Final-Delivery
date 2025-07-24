@@ -9,12 +9,12 @@ export function SiteHeader() {
         <MainNav className="mx-6" />
         <div className="ml-auto flex items-center space-x-4">
           <Link href="/login">
-            <Button variant="ghost" className="text-white hover:bg-[#001a41]/90 hover:text-white">
+            <Button variant="ghost" className="text-black bg-white hover:bg-white/90 hover:text-black">
               Log in
             </Button>
           </Link>
           <Link href="/register">
-            <Button variant="ghost" className="text-white hover:bg-[#001a41]/90 hover:text-white">
+            <Button variant="ghost" className="text-black bg-white hover:bg-white/90 hover:text-black">
               Sign up
             </Button>
           </Link>

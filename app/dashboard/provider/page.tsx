@@ -3,6 +3,7 @@
 import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -29,6 +30,40 @@ import { useAuth } from "@/components/auth-provider"
 
 export default function ProviderDashboardPage() {
   const { user, logout } = useAuth()
+  const router = useRouter()
+  
+  // Handler untuk berbagai aksi pada dashboard provider
+  const handlePatientSearch = () => {
+    router.push('/patients')
+  }
+
+  const handleAddNewPatient = () => {
+    router.push('/patients/add')
+  }
+
+  const handleViewSchedule = () => {
+    router.push('/appointments')
+  }
+
+  const handleOpenLibrary = () => {
+    router.push('/video-library')
+  }
+
+  const handleStartPoseSession = () => {
+    router.push('/pose-estimation')
+  }
+
+  const handleStartPhysiotherapy = () => {
+    router.push('/physiotherapy')
+  }
+  
+  const handlePatientReports = () => {
+    router.push('/patients/reports')
+  }
+  
+  const handleScheduleManagement = () => {
+    router.push('/appointments/schedule')
+  }
   const [todayAppointments, setTodayAppointments] = useState([
     {
       id: 1,
@@ -155,8 +190,8 @@ export default function ProviderDashboardPage() {
       {/* Sidebar */}
       <div className="w-[78px] bg-gradient-to-b from-[#001a41] to-[#003366] flex flex-col items-center py-6">
         <div className="mb-8">
-          <Image src="/kinetic logo.png" alt="Kinetic Logo" width={60} height={60} />
-          <span className="text-white text-xs font-bold mt-1 block text-center">KINETIC</span>
+          <Image src="/kinetic-logo.png" alt="Kinetic Logo" width={60} height={60} />
+          
         </div>
 
         <nav className="flex flex-col items-center space-y-6 flex-1">
@@ -236,7 +271,7 @@ export default function ProviderDashboardPage() {
           </div>
 
           {/* Quick Actions */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
             <Card className="bg-gradient-to-br from-[#014585] to-[#0070c0] text-white">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg">Patient Management</CardTitle>
@@ -253,6 +288,7 @@ export default function ProviderDashboardPage() {
                       size="sm"
                       variant="secondary"
                       className="bg-white text-[#014585] hover:bg-blue-100 hover:text-[#014585]"
+                      onClick={handlePatientSearch}
                     >
                       <Search className="h-4 w-4 mr-1" /> Search
                     </Button>
@@ -260,6 +296,7 @@ export default function ProviderDashboardPage() {
                       size="sm"
                       variant="secondary"
                       className="bg-white text-[#014585] hover:bg-blue-100 hover:text-[#014585]"
+                      onClick={handleAddNewPatient}
                     >
                       <Plus className="h-4 w-4 mr-1" /> Add New
                     </Button>
@@ -270,8 +307,8 @@ export default function ProviderDashboardPage() {
 
             <Card className="bg-gradient-to-br from-[#7e58f4] to-[#5a3dc8] text-white">
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg">OpenPose AI</CardTitle>
-                <CardDescription className="text-purple-100">Movement analysis tool</CardDescription>
+                <CardTitle className="text-lg">Pose Estimation</CardTitle>
+                <CardDescription className="text-purple-100">Real-time pose detection</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex justify-between items-center">
@@ -279,15 +316,37 @@ export default function ProviderDashboardPage() {
                     <Camera className="mr-2 h-5 w-5 text-purple-200" />
                     <span>Patient analysis</span>
                   </div>
-                  <Link href="/pose-estimation">
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      className="bg-white text-[#7e58f4] hover:bg-purple-100 hover:text-[#5a3dc8]"
-                    >
-                      Open Tool
-                    </Button>
-                  </Link>
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    className="bg-white text-[#7e58f4] hover:bg-purple-100 hover:text-[#5a3dc8]"
+                    onClick={handleStartPoseSession}
+                  >
+                    Start Session
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-[#10b981] to-[#059669] text-white">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg">Physiotherapy Session</CardTitle>
+                <CardDescription className="text-green-100">Live therapy monitoring</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center">
+                    <Activity className="mr-2 h-5 w-5 text-green-200" />
+                    <span>Live monitoring</span>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    className="bg-white text-[#10b981] hover:bg-green-100 hover:text-[#059669]"
+                    onClick={handleStartPhysiotherapy}
+                  >
+                    Start Session
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -303,11 +362,13 @@ export default function ProviderDashboardPage() {
                     <Calendar className="mr-2 h-5 w-5 text-[#014585]" />
                     <span>{todayAppointments.length} appointments today</span>
                   </div>
-                  <Link href="/appointments">
-                    <Button size="sm" className="bg-[#014585] hover:bg-[#013a70]">
-                      View Schedule
-                    </Button>
-                  </Link>
+                  <Button 
+                    size="sm" 
+                    className="bg-[#014585] hover:bg-[#013a70]"
+                    onClick={handleViewSchedule}
+                  >
+                    View Schedule
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -323,11 +384,13 @@ export default function ProviderDashboardPage() {
                     <FileText className="mr-2 h-5 w-5 text-[#014585]" />
                     <span>Browse resources</span>
                   </div>
-                  <Link href="/video-library">
-                    <Button size="sm" className="bg-[#014585] hover:bg-[#013a70]">
-                      Open Library
-                    </Button>
-                  </Link>
+                  <Button 
+                    size="sm" 
+                    className="bg-[#014585] hover:bg-[#013a70]"
+                    onClick={handleOpenLibrary}
+                  >
+                    Open Library
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -342,11 +405,13 @@ export default function ProviderDashboardPage() {
                 <CardHeader className="pb-3">
                   <div className="flex justify-between items-center">
                     <CardTitle>Today's Appointments</CardTitle>
-                    <Link href="/appointments">
-                      <Button variant="ghost" className="h-8 text-[#014585]">
-                        Full Schedule
-                      </Button>
-                    </Link>
+                    <Button 
+                      variant="ghost" 
+                      className="h-8 text-[#014585]"
+                      onClick={handleViewSchedule}
+                    >
+                      Full Schedule
+                    </Button>
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -589,11 +654,14 @@ export default function ProviderDashboardPage() {
                 <CardHeader className="pb-3 bg-gradient-to-r from-[#7e58f4] to-[#5a3dc8] text-white">
                   <div className="flex justify-between items-center">
                     <CardTitle>OpenPose AI Analysis</CardTitle>
-                    <Link href="/pose-estimation">
-                      <Button variant="secondary" size="sm" className="bg-white text-[#7e58f4] hover:bg-purple-100">
-                        View Tool
-                      </Button>
-                    </Link>
+                    <Button 
+                      variant="secondary" 
+                      size="sm" 
+                      className="bg-white text-[#7e58f4] hover:bg-purple-100"
+                      onClick={handleStartPoseSession}
+                    >
+                      View Tool
+                    </Button>
                   </div>
                 </CardHeader>
                 <CardContent className="p-0">
@@ -649,33 +717,38 @@ export default function ProviderDashboardPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    <Link href="/pose-estimation">
-                      <Button
-                        variant="outline"
-                        className="w-full justify-between text-[#7e58f4] hover:text-[#5a3dc8] bg-purple-50"
-                      >
-                        OpenPose AI Analysis
-                        <Camera className="ml-2 h-4 w-4" />
-                      </Button>
-                    </Link>
-                    <Link href="/video-library/exercise-demos">
-                      <Button variant="outline" className="w-full justify-between text-[#014585] hover:text-[#013a70]">
-                        Exercise Library
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
-                    </Link>
-                    <Link href="/patients/reports">
-                      <Button variant="outline" className="w-full justify-between text-[#014585] hover:text-[#013a70]">
-                        Patient Reports
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
-                    </Link>
-                    <Link href="/appointments/schedule">
-                      <Button variant="outline" className="w-full justify-between text-[#014585] hover:text-[#013a70]">
-                        Schedule Management
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
-                    </Link>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-between text-[#7e58f4] hover:text-[#5a3dc8] bg-purple-50"
+                      onClick={handleStartPoseSession}
+                    >
+                      OpenPose AI Analysis
+                      <Camera className="ml-2 h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-between text-[#014585] hover:text-[#013a70]"
+                      onClick={handleOpenLibrary}
+                    >
+                      Exercise Library
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-between text-[#014585] hover:text-[#013a70]"
+                      onClick={handlePatientReports}
+                    >
+                      Patient Reports
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-between text-[#014585] hover:text-[#013a70]"
+                      onClick={handleScheduleManagement}
+                    >
+                      Schedule Management
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
                   </div>
                 </CardContent>
               </Card>

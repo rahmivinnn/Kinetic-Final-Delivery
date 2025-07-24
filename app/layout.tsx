@@ -9,7 +9,10 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "Kinetic Rehab - Personalized Recovery Powered by Movement Intelligence",
   description: "Transform your rehabilitation with intelligent movement coaching and data-driven therapy.",
-    generator: 'v0.dev'
+  generator: 'v0.dev',
+  icons: {
+    icon: "/kinetic-logo.png"
+  }
 }
 
 export default function RootLayout({

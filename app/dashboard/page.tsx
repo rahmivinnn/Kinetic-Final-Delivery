@@ -118,7 +118,7 @@ export default function DashboardPage() {
       { name: "Dr. Sarah Johnson", image: "/caring-doctor.png" },
       { name: "Reception", image: "/friendly-receptionist.png" },
       { name: "Dr. Michael Chen", image: "/athletic-man-short-hair.png" },
-      { name: "Appointment System", image: "/placeholder-logo.png" }
+      { name: "Appointment System", image: "/kinetic-logo.png" }
     ];
 
     const messageTemplates = [
@@ -230,8 +230,20 @@ export default function DashboardPage() {
       {/* Sidebar */}
       <div className="w-[78px] bg-gradient-to-b from-[#001a41] to-[#003366] flex flex-col items-center py-6">
         <div className="mb-8">
-          <Image src="/kinetic-new-logo.png" alt="Kinetic Logo" width={60} height={60} />
-          <span className="text-white text-xs font-bold mt-1 block text-center">KINETIC</span>
+          <div className="w-[60px] h-[60px] flex items-center justify-center">
+            <Image 
+              src="/kinetic-logo.png" 
+              alt="Kinetic Logo" 
+              width={60} 
+              height={60}
+              style={{
+                objectFit: "contain",
+                maxWidth: "100%",
+                height: "auto"
+              }}
+            />
+          </div>
+          
         </div>
 
         <nav className="flex flex-col items-center space-y-6 flex-1">
@@ -348,34 +360,34 @@ export default function DashboardPage() {
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.15 }}
-            >
-              <Card className="bg-gradient-to-br from-[#7e58f4] to-[#5a3dc8] text-white">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg">OpenPose AI</CardTitle>
-                  <CardDescription className="text-purple-100">Analyze your movement</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center">
-                      <Camera className="mr-2 h-5 w-5 text-purple-200" />
-                      <span>Real-time analysis</span>
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.15 }}
+              >
+                <Card className="bg-gradient-to-br from-[#7e58f4] to-[#5a3dc8] text-white">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg">OpenPose & MediaPipe</CardTitle>
+                    <CardDescription className="text-purple-100">Dual AI movement analysis</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center">
+                        <Camera className="mr-2 h-5 w-5 text-purple-200" />
+                        <span>Switch between engines</span>
+                      </div>
+                      <Link href="/pose-estimation">
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          className="bg-white text-[#7e58f4] hover:bg-purple-100 hover:text-[#5a3dc8]"
+                        >
+                          Start Now
+                        </Button>
+                      </Link>
                     </div>
-                    <Link href="/pose-estimation">
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        className="bg-white text-[#7e58f4] hover:bg-purple-100 hover:text-[#5a3dc8]"
-                      >
-                        Start Now
-                      </Button>
-                    </Link>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
+                  </CardContent>
+                </Card>
+              </motion.div>
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -677,7 +689,7 @@ export default function DashboardPage() {
                 </Card>
               </motion.div>
 
-              {/* OpenPose Analysis */}
+              {/* AI Movement Analysis */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -686,7 +698,7 @@ export default function DashboardPage() {
                 <Card className="overflow-hidden">
                   <CardHeader className="pb-3 bg-gradient-to-r from-[#014585] to-[#0070c0] text-white">
                     <div className="flex justify-between items-center">
-                      <CardTitle>OpenPose AI Analysis</CardTitle>
+                      <CardTitle>AI Movement Analysis</CardTitle>
                       <Link href="/pose-estimation">
                         <Button variant="secondary" size="sm" className="bg-white text-[#014585] hover:bg-blue-100">
                           Open Tool
@@ -698,34 +710,34 @@ export default function DashboardPage() {
                     <div className="relative aspect-video bg-gray-900">
                       <Image
                         src="/movement-intelligence.png"
-                        alt="OpenPose Analysis"
+                        alt="AI Movement Analysis"
                         fill
                         className="object-cover opacity-80"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-4">
-                        <h3 className="text-white font-medium mb-1">Real-time Movement Analysis</h3>
-                        <p className="text-white/80 text-sm">Track your form and get instant feedback on your exercises</p>
+                        <h3 className="text-white font-medium mb-1">Dual Engine Movement Analysis</h3>
+                        <p className="text-white/80 text-sm">Switch between OpenPose and MediaPipe for optimal tracking</p>
                       </div>
                     </div>
                     <div className="p-4">
                       <div className="flex justify-between items-center mb-3">
-                        <h4 className="font-medium text-gray-900">Recent Analysis</h4>
+                        <h4 className="font-medium text-gray-900">Engine Comparison</h4>
                         <span className="text-xs text-gray-500">Last updated: Today</span>
                       </div>
                       <div className="space-y-2">
                         <div className="flex items-center justify-between text-sm">
                           <div className="flex items-center">
                             <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                            <span>Posture Accuracy</span>
+                            <span>OpenPose Accuracy</span>
                           </div>
                           <span className="font-medium">{Math.floor(Math.random() * 15) + 85}%</span>
                         </div>
                         <div className="flex items-center justify-between text-sm">
                           <div className="flex items-center">
                             <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
-                            <span>Movement Fluidity</span>
+                            <span>MediaPipe Accuracy</span>
                           </div>
-                          <span className="font-medium">{Math.floor(Math.random() * 20) + 75}%</span>
+                          <span className="font-medium">{Math.floor(Math.random() * 10) + 88}%</span>
                         </div>
                         <div className="flex items-center justify-between text-sm">
                           <div className="flex items-center">
@@ -757,7 +769,7 @@ export default function DashboardPage() {
                           variant="outline"
                           className="w-full justify-between text-[#014585] hover:text-[#013a70] bg-blue-50"
                         >
-                          OpenPose AI Analysis
+                          OpenPose/MediaPipe Analysis
                           <Camera className="ml-2 h-4 w-4" />
                         </Button>
                       </Link>

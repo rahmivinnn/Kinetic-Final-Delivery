@@ -6,7 +6,19 @@ export function MainNav() {
   return (
     <div className="flex items-center space-x-4 lg:space-x-6">
       <Link href="/" className="flex items-center space-x-2">
-        <Image src="/kinetic-new-logo.png" alt="Kinetic" width={60} height={60} />
+        <div className="w-[60px] h-[60px] flex items-center justify-center">
+        <Image 
+          src="/kinetic-logo.png" 
+          alt="Kinetic" 
+          width={60} 
+          height={60}
+          style={{
+            objectFit: "contain",
+            maxWidth: "100%",
+            height: "auto"
+          }}
+        />
+      </div>
       </Link>
       <nav className="hidden md:flex items-center space-x-6">
         <ScrollLink

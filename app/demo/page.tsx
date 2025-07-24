@@ -7,9 +7,8 @@ export default function DemoPage() {
     <div className="flex flex-col items-center justify-center min-h-screen bg-[#f9fafb] p-4">
       <header className="w-full bg-[#111827] text-white py-3 px-4 mb-8">
         <div className="container mx-auto flex items-center">
-          <Link href="/" className="flex items-center space-x-2">
-            <Image src="/kinetic-new-logo.png" alt="Kinetic Logo" width={40} height={40} />
-            <span className="font-bold text-xl">KINETIC</span>
+          <Link href="/" className="flex items-center">
+            <Image src="/kinetic-logo.png" alt="Kinetic Logo" width={60} height={60} />
           </Link>
         </div>
       </header>

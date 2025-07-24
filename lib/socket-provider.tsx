@@ -4,7 +4,7 @@ import type React from "react"
 import { createContext, useContext, useEffect, useState } from "react"
 import { io, type Socket } from "socket.io-client"
 
-type SocketContextType = {
+interface SocketContextType {
   socket: Socket | null
   isConnected: boolean
   lastMessage: any
@@ -30,7 +30,7 @@ export const useSocket = () => useContext(SocketContext)
 
 export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [socket, setSocket] = useState<Socket | null>(null)
-  const [isConnected, setIsConnected] = useState(false)
+  const [isConnected, setIsConnected] = useState<boolean>(false)
   const [lastMessage, setLastMessage] = useState<any>(null)
   const [typingStatus, setTypingStatus] = useState<Record<string, { userId: string; username: string }>>({})
 
@@ -77,10 +77,35 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     })
 
     socketInstance.on("appointment_update", (data) => {
-      console.log("Appointment update received", data)
+      console.log("Appointment update received", data);
       // In a real app, you would update your appointment state here
       // For example, dispatch an action to update the Redux store
-    })
+      
+      // Trigger a custom event that components can listen for
+      const event = new CustomEvent("appointment_update", { detail: data });
+      window.dispatchEvent(event);
+    });
+    
+    socketInstance.on("video_call_initiated", (data) => {
+      console.log("Video call initiated", data);
+      // Trigger a custom event that components can listen for
+      const event = new CustomEvent("video_call_initiated", { detail: data });
+      window.dispatchEvent(event);
+    });
+    
+    socketInstance.on("exercise_update", (data) => {
+      console.log("Exercise update received", data);
+      // Trigger a custom event that components can listen for
+      const event = new CustomEvent("exercise_update", { detail: data });
+      window.dispatchEvent(event);
+    });
+    
+    socketInstance.on("progress_update", (data) => {
+      console.log("Progress update received", data);
+      // Trigger a custom event that components can listen for
+      const event = new CustomEvent("progress_update", { detail: data });
+      window.dispatchEvent(event);
+    });
 
     setSocket(socketInstance)
 

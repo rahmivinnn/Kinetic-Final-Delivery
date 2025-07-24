@@ -14,7 +14,11 @@ export type Notification = {
   timestamp: Date
 }
 
-export function NotificationSystem() {
+interface NotificationSystemProps {
+  message?: string
+}
+
+export function NotificationSystem({ message }: NotificationSystemProps = {}) {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [showNotifications, setShowNotifications] = useState(false)
   const [newNotification, setNewNotification] = useState<Notification | null>(null)
@@ -77,9 +81,9 @@ export function NotificationSystem() {
     };
   };
 
-  // Simulate receiving notifications
+  // Receive notifications from socket and generate initial ones
   useEffect(() => {
-    if (isConnected) {
+    if (isConnected && socket) {
       // Generate 3-5 initial notifications
       const count = Math.floor(Math.random() * 3) + 3;
       const initialNotifications: Notification[] = [];
@@ -92,6 +96,33 @@ export function NotificationSystem() {
       initialNotifications.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
 
       setNotifications(initialNotifications);
+      
+      // Set up socket event listeners for real notifications
+      socket.on("notification", (data) => {
+        console.log("Received notification from socket:", data);
+        
+        const newNotif: Notification = {
+          id: data.id || Date.now().toString() + Math.random().toString(36).substr(2, 5),
+          title: data.title,
+          message: data.message,
+          type: data.type || "message",
+          read: false,
+          timestamp: new Date()
+        };
+        
+        setNotifications((prev) => [newNotif, ...prev]);
+        setNewNotification(newNotif);
+        
+        // Auto-hide the notification after 5 seconds
+        setTimeout(() => {
+          setNewNotification(null);
+        }, 5000);
+      });
+      
+      // Clean up event listener
+      return () => {
+        socket.off("notification");
+      };
 
       // Simulate receiving new notifications periodically
       const interval = setInterval(() => {
@@ -168,6 +199,25 @@ export function NotificationSystem() {
   }
 
   const unreadCount = notifications.filter((n) => !n.read).length
+
+  // If a simple message is provided, show it as a toast notification
+  if (message) {
+    return (
+      <AnimatePresence>
+        <motion.div
+          initial={{ opacity: 0, y: 50, x: "-50%" }}
+          animate={{ opacity: 1, y: 0, x: "-50%" }}
+          exit={{ opacity: 0, y: 50, x: "-50%" }}
+          transition={{ type: "spring", damping: 15 }}
+          className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg p-4 z-50 flex items-start max-w-md"
+        >
+          <div className="flex-1">
+            <p className="text-sm text-gray-600">{message}</p>
+          </div>
+        </motion.div>
+      </AnimatePresence>
+    )
+  }
 
   return (
     <>

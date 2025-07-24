@@ -10,14 +10,17 @@ interface LogoProps {
 
 export function Logo({ className, size = 60, href = "/" }: LogoProps) {
   const logoComponent = (
-    <div className={cn("relative", className)} style={{ width: `${size}px`, height: `${size}px` }}>
+    <div className={cn("relative flex items-center justify-center", className)} style={{ width: `${size}px`, height: `${size}px` }}>
       <Image
-        src="/kinetic-new-logo.png"
+        src="/kinetic-logo.png"
         alt="Kinetic Logo"
-        fill
+        width={size}
+        height={size}
         style={{
           objectFit: "contain",
           objectPosition: "center",
+          maxWidth: "100%",
+          height: "auto",
         }}
         priority
       />

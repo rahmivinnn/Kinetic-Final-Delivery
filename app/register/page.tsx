@@ -1,3 +1,6 @@
+"use client"
+
+import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
@@ -5,8 +8,114 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { SiteHeader } from "@/components/site-header"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useRouter } from "next/navigation"
+import { toast } from "@/components/ui/use-toast"
 
 export default function Register() {
+  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(false)
+  const [patientData, setPatientData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    terms: false
+  })
+  const [providerData, setProviderData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    license: '',
+    terms: false
+  })
+
+  const handlePatientSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true)
+    
+    try {
+      if (patientData.password !== patientData.confirmPassword) {
+        toast({
+          title: "Error",
+          description: "Passwords do not match",
+          variant: "destructive"
+        })
+        return
+      }
+      
+      if (!patientData.terms) {
+        toast({
+          title: "Error",
+          description: "Please accept the terms and conditions",
+          variant: "destructive"
+        })
+        return
+      }
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      toast({
+        title: "Success!",
+        description: "Patient account created successfully"
+      })
+      
+      router.push('/register/success')
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create account. Please try again.",
+        variant: "destructive"
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleProviderSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true)
+    
+    try {
+      if (providerData.password !== providerData.confirmPassword) {
+        toast({
+          title: "Error",
+          description: "Passwords do not match",
+          variant: "destructive"
+        })
+        return
+      }
+      
+      if (!providerData.terms) {
+        toast({
+          title: "Error",
+          description: "Please accept the terms and conditions",
+          variant: "destructive"
+        })
+        return
+      }
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      toast({
+        title: "Success!",
+        description: "Provider account created successfully"
+      })
+      
+      router.push('/register/success')
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create account. Please try again.",
+        variant: "destructive"
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
@@ -14,7 +123,7 @@ export default function Register() {
         <div className="w-full max-w-md space-y-8 rounded-lg bg-white p-6 shadow-lg">
           <div className="flex flex-col items-center space-y-4 text-center">
             <div className="flex justify-center w-full">
-              <Image src="/kinetic-new-logo.png" alt="Kinetic" width={80} height={80} />
+              <Image src="/kinetic-logo.png" alt="Kinetic Logo" width={80} height={80} />
             </div>
             <h1 className="text-2xl font-bold">Create your account</h1>
             <p className="text-sm text-gray-500">Sign up to start your recovery journey</p>
@@ -25,72 +134,164 @@ export default function Register() {
               <TabsTrigger value="provider">Provider</TabsTrigger>
             </TabsList>
             <TabsContent value="patient" className="space-y-4 pt-4">
-              <div className="space-y-2">
-                <Label htmlFor="patient-name">Full Name</Label>
-                <Input id="patient-name" placeholder="Enter your full name" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="patient-email">Email</Label>
-                <Input id="patient-email" placeholder="Enter your email address" type="email" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="patient-password">Password</Label>
-                <Input id="patient-password" placeholder="Create a password (min. 8 characters)" type="password" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="patient-confirm-password">Confirm Password</Label>
-                <Input id="patient-confirm-password" placeholder="Confirm your password" type="password" />
-              </div>
-              <div className="flex items-center space-x-2">
-                <input type="checkbox" id="patient-terms" className="h-4 w-4 rounded border-gray-300" />
-                <Label htmlFor="patient-terms" className="text-sm">
-                  I agree to the{" "}
-                  <Link href="/terms" className="text-blue-600 hover:underline">
-                    Terms of Service
-                  </Link>{" "}
-                  and{" "}
-                  <Link href="/privacy" className="text-blue-600 hover:underline">
-                    Privacy Policy
-                  </Link>
-                </Label>
-              </div>
-              <Button className="w-full bg-[#001a41]">Create Account</Button>
+              <form onSubmit={handlePatientSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="patient-name">Full Name</Label>
+                  <Input 
+                    id="patient-name" 
+                    placeholder="Enter your full name" 
+                    value={patientData.name}
+                    onChange={(e) => setPatientData({...patientData, name: e.target.value})}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="patient-email">Email</Label>
+                  <Input 
+                    id="patient-email" 
+                    placeholder="Enter your email address" 
+                    type="email" 
+                    value={patientData.email}
+                    onChange={(e) => setPatientData({...patientData, email: e.target.value})}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="patient-password">Password</Label>
+                  <Input 
+                    id="patient-password" 
+                    placeholder="Create a password (min. 8 characters)" 
+                    type="password" 
+                    value={patientData.password}
+                    onChange={(e) => setPatientData({...patientData, password: e.target.value})}
+                    minLength={8}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="patient-confirm-password">Confirm Password</Label>
+                  <Input 
+                    id="patient-confirm-password" 
+                    placeholder="Confirm your password" 
+                    type="password" 
+                    value={patientData.confirmPassword}
+                    onChange={(e) => setPatientData({...patientData, confirmPassword: e.target.value})}
+                    required
+                  />
+                </div>
+                <div className="flex items-center space-x-2">
+                  <input 
+                    type="checkbox" 
+                    id="patient-terms" 
+                    className="h-4 w-4 rounded border-gray-300" 
+                    checked={patientData.terms}
+                    onChange={(e) => setPatientData({...patientData, terms: e.target.checked})}
+                    required
+                  />
+                  <Label htmlFor="patient-terms" className="text-sm">
+                    I agree to the{" "}
+                    <Link href="/terms" className="text-blue-600 hover:underline">
+                      Terms of Service
+                    </Link>{" "}
+                    and{" "}
+                    <Link href="/privacy" className="text-blue-600 hover:underline">
+                      Privacy Policy
+                    </Link>
+                  </Label>
+                </div>
+                <Button 
+                  type="submit" 
+                  className="w-full bg-[#001a41]" 
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Creating Account..." : "Create Account"}
+                </Button>
+              </form>
             </TabsContent>
             <TabsContent value="provider" className="space-y-4 pt-4">
-              <div className="space-y-2">
-                <Label htmlFor="provider-name">Full Name</Label>
-                <Input id="provider-name" placeholder="Enter your full name" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="provider-email">Email</Label>
-                <Input id="provider-email" placeholder="Enter your email address" type="email" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="provider-password">Password</Label>
-                <Input id="provider-password" placeholder="Create a password (min. 8 characters)" type="password" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="provider-confirm-password">Confirm Password</Label>
-                <Input id="provider-confirm-password" placeholder="Confirm your password" type="password" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="provider-license">License Number</Label>
-                <Input id="provider-license" placeholder="Enter your professional license number" />
-              </div>
-              <div className="flex items-center space-x-2">
-                <input type="checkbox" id="provider-terms" className="h-4 w-4 rounded border-gray-300" />
-                <Label htmlFor="provider-terms" className="text-sm">
-                  I agree to the{" "}
-                  <Link href="/terms" className="text-blue-600 hover:underline">
-                    Terms of Service
-                  </Link>{" "}
-                  and{" "}
-                  <Link href="/privacy" className="text-blue-600 hover:underline">
-                    Privacy Policy
-                  </Link>
-                </Label>
-              </div>
-              <Button className="w-full bg-[#001a41]">Create Account</Button>
+              <form onSubmit={handleProviderSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="provider-name">Full Name</Label>
+                  <Input 
+                    id="provider-name" 
+                    placeholder="Enter your full name" 
+                    value={providerData.name}
+                    onChange={(e) => setProviderData({...providerData, name: e.target.value})}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="provider-email">Email</Label>
+                  <Input 
+                    id="provider-email" 
+                    placeholder="Enter your email address" 
+                    type="email" 
+                    value={providerData.email}
+                    onChange={(e) => setProviderData({...providerData, email: e.target.value})}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="provider-password">Password</Label>
+                  <Input 
+                    id="provider-password" 
+                    placeholder="Create a password (min. 8 characters)" 
+                    type="password" 
+                    value={providerData.password}
+                    onChange={(e) => setProviderData({...providerData, password: e.target.value})}
+                    minLength={8}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="provider-confirm-password">Confirm Password</Label>
+                  <Input 
+                    id="provider-confirm-password" 
+                    placeholder="Confirm your password" 
+                    type="password" 
+                    value={providerData.confirmPassword}
+                    onChange={(e) => setProviderData({...providerData, confirmPassword: e.target.value})}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="provider-license">License Number</Label>
+                  <Input 
+                    id="provider-license" 
+                    placeholder="Enter your professional license number" 
+                    value={providerData.license}
+                    onChange={(e) => setProviderData({...providerData, license: e.target.value})}
+                    required
+                  />
+                </div>
+                <div className="flex items-center space-x-2">
+                  <input 
+                    type="checkbox" 
+                    id="provider-terms" 
+                    className="h-4 w-4 rounded border-gray-300" 
+                    checked={providerData.terms}
+                    onChange={(e) => setProviderData({...providerData, terms: e.target.checked})}
+                    required
+                  />
+                  <Label htmlFor="provider-terms" className="text-sm">
+                    I agree to the{" "}
+                    <Link href="/terms" className="text-blue-600 hover:underline">
+                      Terms of Service
+                    </Link>{" "}
+                    and{" "}
+                    <Link href="/privacy" className="text-blue-600 hover:underline">
+                      Privacy Policy
+                    </Link>
+                  </Label>
+                </div>
+                <Button 
+                  type="submit" 
+                  className="w-full bg-[#001a41]" 
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Creating Account..." : "Create Account"}
+                </Button>
+              </form>
             </TabsContent>
           </Tabs>
           <div className="relative flex items-center justify-center">

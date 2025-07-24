@@ -97,7 +97,7 @@ export default function ForgotPasswordPage() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#001a41] to-[#00487c] p-4">
       <div className="text-center mb-8">
         <div className="flex justify-center mb-4">
-          <Image src="/kinetic logo.png" alt="Kinetic Logo" width={80} height={80} />
+          <Image src="/kinetic-logo.png" alt="Kinetic Logo" width={80} height={80} />
         </div>
         {/* Removed KINETIC text */}
         <div className="mt-2">
@@ -142,7 +142,7 @@ export default function ForgotPasswordPage() {
                 <div className="mt-6 text-center">
                   <Button
                     variant="outline"
-                    className="w-full border-[#3e82e7] text-[#3e82e7] hover:bg-[#3e82e7] hover:text-white"
+                    className="w-full border-[#3e82e7] text-[#3e82e7] hover:bg-[#3e82e7] hover:text-black"
                     onClick={() => {
                       setSubmitted(false)
                     }}
@@ -156,7 +156,7 @@ export default function ForgotPasswordPage() {
                 <Link href="/login">
                   <Button
                     variant="outline"
-                    className="border-[#3e82e7] text-[#3e82e7] hover:bg-[#3e82e7] hover:text-white"
+                    className="border-[#3e82e7] text-[#3e82e7] hover:bg-[#3e82e7] hover:text-black"
                   >
                     Return to Login
                   </Button>

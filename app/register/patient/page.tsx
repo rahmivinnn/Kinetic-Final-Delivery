@@ -27,7 +27,7 @@ export default function PatientRegisterPage() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#000a2c] to-[#00487c] p-4">
       <div className="w-full max-w-md">
         <div className="flex justify-center mb-8">
-          <Image src="/kinetic logo.png" alt="Kinetic Logo" width={80} height={80} />
+          <Image src="/kinetic-logo.png" alt="Kinetic Logo" width={80} height={80} />
         </div>
 
         <h1 className="text-2xl font-bold text-white text-center mb-8">Create your account</h1>

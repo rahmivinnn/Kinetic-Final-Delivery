@@ -11,6 +11,7 @@ interface VideoCallProps {
   onEndCall: () => void
   isMinimized?: boolean
   onToggleMinimize?: () => void
+  sessionId?: string
 }
 
 export function VideoCall({
@@ -19,6 +20,7 @@ export function VideoCall({
   onEndCall,
   isMinimized = false,
   onToggleMinimize,
+  sessionId,
 }: VideoCallProps) {
   const [isMuted, setIsMuted] = useState(false)
   const [isVideoOff, setIsVideoOff] = useState(false)
@@ -50,31 +52,84 @@ export function VideoCall({
     }
   }, [isConnecting])
 
+  // Generate a unique user ID for this session or use the provided sessionId
+  const [userId] = useState(sessionId || `user_${Date.now().toString(36)}_${Math.random().toString(36).substr(2, 5)}`);
+  const [targetId, setTargetId] = useState('therapist_1'); // In a real app, this would be the actual therapist ID
+  
+  // Log session information
+  useEffect(() => {
+    console.log(`Video call initialized with session ID: ${userId}`);
+    console.log(`Target therapist ID: ${targetId}`);
+  }, [userId, targetId]);
+
   useEffect(() => {
     if (!isConnecting) {
-      // Koneksi WebSocket signaling
+      // Connect to WebSocket signaling server
       wsRef.current = new WebSocket("ws://localhost:3001")
-      wsRef.current.onopen = () => setSignalingStatus("WebSocket connected")
-      wsRef.current.onmessage = async (event) => {
-        const msg = JSON.parse(event.data)
-        if (msg.type === "answer" && peerConnectionRef.current) {
-          await peerConnectionRef.current.setRemoteDescription({ type: "answer", sdp: msg.answer })
-          setSignalingStatus("Received answer from remote")
-        }
-        if (msg.type === "ice-candidate" && peerConnectionRef.current) {
-          await peerConnectionRef.current.addIceCandidate(msg.candidate)
-          setSignalingStatus("Received ICE candidate")
+      
+      wsRef.current.onopen = () => {
+        setSignalingStatus("WebSocket connected")
+        
+        // Register with the signaling server
+        if (wsRef.current) {
+          console.log(`Registering with signaling server using session ID: ${userId}`)
+          wsRef.current.send(JSON.stringify({
+            type: 'register',
+            userId: userId,
+            sessionId: userId // Include session ID in registration
+          }))
         }
       }
+      
+      wsRef.current.onmessage = async (event) => {
+        try {
+          const msg = JSON.parse(event.data)
+          console.log(`Received WebSocket message type: ${msg.type}`)
+          
+          // Verify session ID if present in message
+          if (msg.sessionId && msg.sessionId !== userId && msg.target !== userId) {
+            console.log(`Ignoring message for different session: ${msg.sessionId}`)
+            return
+          }
+          
+          if (msg.type === "registered") {
+            setSignalingStatus("Registered with signaling server")
+            console.log(`Successfully registered with signaling server as: ${userId}`)
+            startSignaling()
+          }
+          else if (msg.type === "answer" && peerConnectionRef.current) {
+            console.log(`Received answer from remote for session: ${userId}`)
+            await peerConnectionRef.current.setRemoteDescription({ type: "answer", sdp: msg.sdp })
+            setSignalingStatus("Received answer from remote")
+          }
+          else if (msg.type === "ice-candidate" && peerConnectionRef.current) {
+            console.log(`Received ICE candidate for session: ${userId}`)
+            await peerConnectionRef.current.addIceCandidate(msg.candidate)
+            setSignalingStatus("Received ICE candidate")
+          }
+          else if (msg.type === "error") {
+            console.error(`Signaling error: ${msg.message}`)
+            setSignalingStatus(`Error: ${msg.message}`)
+          }
+          else if (msg.type === "user-disconnected") {
+            console.log(`Remote user disconnected: ${msg.userId}`)
+            setSignalingStatus(`Remote user disconnected: ${msg.userId}`)
+            // In a real app, you might want to end the call here
+          }
+        } catch (error) {
+          console.error("Error parsing message:", error)
+        }
+      }
+      
       wsRef.current.onerror = () => setSignalingStatus("WebSocket error")
       wsRef.current.onclose = () => setSignalingStatus("WebSocket closed")
-      startSignaling()
     }
+    
     return () => {
       wsRef.current?.close()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isConnecting])
+  }, [isConnecting, userId])
 
   // Format duration as mm:ss
   const formatDuration = (seconds: number) => {
@@ -108,25 +163,46 @@ export function VideoCall({
 
   const startSignaling = async () => {
     setSignalingStatus("Starting signaling...")
+    console.log(`Starting WebRTC signaling with session ID: ${userId}`)
+    
     const pc = new RTCPeerConnection()
     peerConnectionRef.current = pc
+    
     // Tambahkan local stream jika ada
     if (localVideoRef.current && localVideoRef.current.srcObject) {
       (localVideoRef.current.srcObject as MediaStream).getTracks().forEach(track => {
         pc.addTrack(track)
+        console.log(`Added track to peer connection: ${track.kind}`)
       })
     }
+    
     // ICE candidate
     pc.onicecandidate = (event) => {
       if (event.candidate && wsRef.current) {
-        wsRef.current.send(JSON.stringify({ type: "ice-candidate", candidate: event.candidate }))
+        console.log(`Sending ICE candidate for session: ${userId}`)
+        wsRef.current.send(JSON.stringify({ 
+          type: "ice-candidate", 
+          sender: userId,
+          target: targetId,
+          candidate: event.candidate,
+          sessionId: userId // Include session ID in all signaling messages
+        }))
       }
     }
+    
     // Buat offer
     const offer = await pc.createOffer()
     await pc.setLocalDescription(offer)
     setSignalingStatus("Sending offer via WebSocket...")
-    wsRef.current?.send(JSON.stringify({ type: "offer", offer: offer.sdp }))
+    console.log(`Sending WebRTC offer for session: ${userId}`)
+    
+    wsRef.current?.send(JSON.stringify({ 
+      type: "offer", 
+      sender: userId,
+      target: targetId,
+      sdp: offer.sdp,
+      sessionId: userId // Include session ID in all signaling messages
+    }))
   }
 
   const toggleMute = () => {
@@ -167,11 +243,65 @@ export function VideoCall({
     }
   }
 
+  const endCall = async () => {
+    // Stop all tracks on local stream
+    if (localVideoRef.current && localVideoRef.current.srcObject) {
+      const stream = localVideoRef.current.srcObject as MediaStream
+      stream.getTracks().forEach((track) => track.stop())
+    }
+
+    // Close peer connection
+    if (peerConnectionRef.current) {
+      peerConnectionRef.current.close()
+    }
+
+    // Send end-call message to signaling server
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      console.log(`Sending end-call message for session: ${userId}`)
+      wsRef.current.send(JSON.stringify({
+        type: "end-call",
+        sender: userId,
+        target: targetId,
+        sessionId: userId // Include session ID in end-call message
+      }))
+    }
+
+    // Also send end-call message to API for session cleanup
+    try {
+      console.log(`Sending end-call API request for session: ${userId}`)
+      await fetch("/api/video-call", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "end-call",
+          sender: userId,
+          target: targetId,
+          sessionId: userId // Include session ID for API cleanup
+        })
+      })
+    } catch (error) {
+      console.error("Error ending call:", error)
+    }
+
+    // Reset state
+    setIsConnecting(false)
+    setIsMuted(false)
+    setIsVideoOff(false)
+    setIsScreenSharing(false)
+    setCallDuration(0)
+
+    // Call onEndCall from props
+    onEndCall()
+  }
+
   if (isMinimized) {
     return (
       <div className="fixed bottom-4 right-4 bg-white rounded-lg shadow-lg overflow-hidden z-50 w-72">
         <div className="p-2 bg-[#014585] text-white flex justify-between items-center">
-          <span className="text-sm font-medium">Call with {therapistName}</span>
+          <div>
+            <span className="text-sm font-medium">Call with {therapistName}</span>
+            {userId && <span className="block text-xs text-blue-200">ID: {userId.substring(0, 8)}...</span>}
+          </div>
           <div className="flex items-center space-x-1">
             <Button
               variant="ghost"
@@ -214,7 +344,10 @@ export function VideoCall({
           </div>
         </div>
         {signalingStatus && (
-          <div className="text-xs text-blue-600 p-2">{signalingStatus}</div>
+          <div className="text-xs text-blue-600 p-2">
+            {signalingStatus}
+            {userId && <span className="block text-gray-500 text-xs mt-1">Session ID: {userId.substring(0, 8)}...</span>}
+          </div>
         )}
       </div>
     )

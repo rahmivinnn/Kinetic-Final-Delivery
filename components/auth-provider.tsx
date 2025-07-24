@@ -75,6 +75,8 @@ const MOCK_USERS = [
 interface AuthContextType {
   user: User | null
   login: (email: string, password: string) => Promise<boolean>
+  loginWithGoogle: () => Promise<boolean>
+  loginWithApple: () => Promise<boolean>
   logout: () => void
   isLoading: boolean
 }
@@ -118,13 +120,51 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return false
   }
 
+  // Login with Google
+  const loginWithGoogle = async (): Promise<boolean> => {
+    // Simulate API call delay
+    await new Promise((resolve) => setTimeout(resolve, 1500))
+
+    // For demo purposes, we'll use a mock Google user
+    const googleUser = {
+      id: "google-123",
+      email: "google.user@example.com",
+      name: "Google User",
+      role: "patient" as UserRole,
+      avatar: "/smiling-brown-haired-woman.png"
+    }
+
+    setUser(googleUser)
+    localStorage.setItem("kineticUser", JSON.stringify(googleUser))
+    return true
+  }
+
+  // Login with Apple
+  const loginWithApple = async (): Promise<boolean> => {
+    // Simulate API call delay
+    await new Promise((resolve) => setTimeout(resolve, 1500))
+
+    // For demo purposes, we'll use a mock Apple user
+    const appleUser = {
+      id: "apple-456",
+      email: "apple.user@example.com",
+      name: "Apple User",
+      role: "patient" as UserRole,
+      avatar: "/athletic-man-short-hair.png"
+    }
+
+    setUser(appleUser)
+    localStorage.setItem("kineticUser", JSON.stringify(appleUser))
+    return true
+  }
+
   const logout = () => {
     setUser(null)
     localStorage.removeItem("kineticUser")
     router.push("/")
   }
 
-  return <AuthContext.Provider value={{ user, login, logout, isLoading }}>{children}</AuthContext.Provider>
+  return <AuthContext.Provider value={{ user, login, loginWithGoogle, loginWithApple, logout, isLoading }}>{children}</AuthContext.Provider>
 }
 
 export function useAuth() {

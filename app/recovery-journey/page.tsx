@@ -1,3 +1,5 @@
+"use client"
+
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -22,9 +24,8 @@ export default function RecoveryJourneyPage() {
       {/* Navigation */}
       <header className="bg-[#111827] text-white">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <Link href="/" className="flex items-center space-x-2">
-            <Image src="/kinetic-new-logo.png" alt="Kinetic Logo" width={40} height={40} />
-            <span className="font-bold text-xl text-white">KINETIC</span>
+          <Link href="/" className="flex items-center">
+            <Image src="/kinetic-logo.png" alt="Kinetic Logo" width={60} height={60} />
           </Link>
           <nav className="hidden md:flex items-center space-x-8">
             <Link href="/recovery-journey#features" className="text-sm hover:text-[#9ca3af]">
@@ -59,8 +60,11 @@ export default function RecoveryJourneyPage() {
                 <Link href="/assessment">
                   <Button className="bg-[#111827] hover:bg-[#1f2937]">Start Your Recovery Journey</Button>
                 </Link>
-                <Link href="/demo">
-                  <Button variant="outline" className="border-[#111827] text-[#111827]">
+                <Link href="/?showDemo=true">
+                  <Button 
+                    variant="outline" 
+                    className="border-[#111827] text-[#111827]"
+                  >
                     Watch Demo
                   </Button>
                 </Link>
@@ -493,8 +497,8 @@ export default function RecoveryJourneyPage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <Image src="/kinetic logo.png" alt="Kinetic Logo" width={32} height={32} />
-                <span className="font-bold text-xl">KINETIC</span>
+                <Image src="/kinetic-logo.png" alt="Kinetic Logo" width={32} height={32} />
+
               </div>
               <p className="text-sm text-[#9ca3af] mb-4">
                 Transforming rehabilitation through movement intelligence and personalized care.

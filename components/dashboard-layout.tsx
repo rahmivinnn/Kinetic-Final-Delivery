@@ -2,19 +2,18 @@
 
 import type { ReactNode } from "react"
 import Link from "next/link"
-import { Home, Activity, Users, MessageSquare, BarChart2, FileText, User, Settings, LogOut, Camera } from "lucide-react"
+import { Home, Activity, Users, MessageSquare, BarChart2, FileText, User, Settings, LogOut, Camera, Stethoscope } from "lucide-react"
 import { useAuth } from "@/components/auth-provider"
 import { Logo } from "@/components/logo"
 import { useRouter } from "next/navigation"
 
 
 export function DashboardLayout({ children, activeLink = "home" }: { children: React.ReactNode; activeLink?: string }) {
-  const { signOut } = useAuth()
+  const { logout } = useAuth()
   const router = useRouter()
 
-  const logout = async () => {
-    await signOut()
-    router.push("/")
+  const handleLogout = async () => {
+    logout()
   }
   return (
     <div className="flex h-screen bg-[#f0f4f9]">
@@ -81,6 +80,14 @@ export function DashboardLayout({ children, activeLink = "home" }: { children: R
           >
             <Camera className="w-5 h-5" />
           </Link>
+          <Link
+            href="/physiotherapy"
+            className={`w-10 h-10 rounded-xl ${
+              activeLink === "physiotherapy" ? "bg-[#7e58f4] bg-opacity-20" : "hover:bg-white/10"
+            } flex items-center justify-center text-white`}
+          >
+            <Stethoscope className="w-5 h-5" />
+          </Link>
         </nav>
 
         <div className="mt-auto flex flex-col items-center space-y-6">
@@ -101,7 +108,7 @@ export function DashboardLayout({ children, activeLink = "home" }: { children: R
             <Settings className="w-5 h-5" />
           </Link>
           <button
-            onClick={logout}
+            onClick={handleLogout}
             className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
           >
             <LogOut className="w-5 h-5" />

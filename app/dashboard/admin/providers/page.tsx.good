@@ -1,0 +1,1055 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import Image from "next/image"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Switch } from "@/components/ui/switch"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  SheetFooter,
+  SheetClose,
+} from "@/components/ui/sheet"
+import {
+  Home,
+  Building2,
+  UserCog,
+  Shield,
+  LineChart,
+  Bell,
+  User,
+  Settings,
+  LogOut,
+  Search,
+  Plus,
+  Filter,
+  Download,
+  MoreVertical,
+  Edit,
+  Calendar,
+  MessageSquare,
+  Phone,
+  Trash2,
+  ChevronRight,
+  CheckCircle,
+  XCircle,
+  Clock,
+  Mail,
+  Award,
+  FileCheck,
+  AlertCircle,
+  X,
+  Save,
+  Upload,
+  Info,
+} from "lucide-react"
+import { useAuth } from "@/components/auth-provider"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Badge } from "@/components/ui/badge"
+
+export default function AdminProvidersPage() {
+  const { user, logout } = useAuth()
+  
+  // State for search and filter
+  const [searchQuery, setSearchQuery] = useState("")
+  const [statusFilter, setStatusFilter] = useState("all")
+  const [filterOpen, setFilterOpen] = useState(false)
+  const [specialtyFilter, setSpecialtyFilter] = useState<string>("")
+  const [clinicFilter, setClinicFilter] = useState<string>("")
+  
+  // State untuk modal
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [showDetailsModal, setShowDetailsModal] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
+  
+  // State untuk data provider
+  const [selectedProvider, setSelectedProvider] = useState<any>(null)
+  const [editingProvider, setEditingProvider] = useState<any>(null)
+  const [newProvider, setNewProvider] = useState({
+    name: "",
+    email: "",
+    specialty: "",
+    clinic: "Kinetic Rehab Center - Downtown",
+    clinicId: 1,
+    licenseNumber: "",
+    phone: ""
+  })
+  
+  // State untuk data penyedia layanan
+  const [providers, setProviders] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  
+  // Fetch providers dari API
+  useEffect(() => {
+    const fetchProviders = async () => {
+      try {
+        setLoading(true)
+        // Buat URL dengan parameter filter
+        const url = new URL('/api/providers', window.location.origin)
+        if (searchQuery) url.searchParams.append('search', searchQuery)
+        if (statusFilter !== 'all') url.searchParams.append('status', statusFilter)
+        if (specialtyFilter) url.searchParams.append('specialty', specialtyFilter)
+        if (clinicFilter) url.searchParams.append('clinic', clinicFilter)
+        
+        const response = await fetch(url.toString())
+        if (!response.ok) throw new Error('Gagal mengambil data provider')
+        
+        const data = await response.json()
+        setProviders(data)
+        setError(null)
+      } catch (err) {
+        console.error('Error fetching providers:', err)
+        setError('Gagal memuat data provider. Silakan coba lagi.')
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    fetchProviders()
+  }, [searchQuery, statusFilter, specialtyFilter, clinicFilter])
+
+  // Extract unique specialties and clinics for filters
+  const specialties = [...new Set(providers.map(provider => provider.specialty))]
+  const clinics = [...new Set(providers.map(provider => provider.clinic))]
+
+  // Filter providers based on search query, status, specialty, and clinic
+  const filteredProviders = providers.filter(provider => {
+    // Filter by search query
+    const matchesSearch = 
+      provider.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      provider.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      provider.specialty.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      provider.clinic.toLowerCase().includes(searchQuery.toLowerCase())
+    
+    // Filter by status
+    const matchesStatus = statusFilter === "all" || provider.status === statusFilter
+    
+    // Filter by specialty
+    const matchesSpecialty = !specialtyFilter || provider.specialty === specialtyFilter
+    
+    // Filter by clinic
+    const matchesClinic = !clinicFilter || provider.clinic === clinicFilter
+    
+    return matchesSearch && matchesStatus && matchesSpecialty && matchesClinic
+  })
+
+  // Handler untuk pencarian
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value)
+  }
+  
+  // Handler untuk filter
+  const handleFilter = () => {
+    setFilterOpen(!filterOpen)
+  }
+
+  // Handler untuk export
+  const handleExport = () => {
+    // Get filtered providers
+    const dataToExport = filteredProviders.map(provider => ({
+      Name: provider.name,
+      Email: provider.email,
+      Specialty: provider.specialty,
+      Clinic: provider.clinic,
+      Status: provider.status,
+      "License Number": provider.licenseNumber,
+      "License Expiry": new Date(provider.licenseExpiry).toLocaleDateString(),
+      Phone: provider.phone,
+      "Active Patients": provider.patients,
+      "Join Date": new Date(provider.joinDate).toLocaleDateString(),
+      "Verification Status": provider.verificationStatus
+    }))
+
+    // Convert to CSV
+    const headers = Object.keys(dataToExport[0])
+    const csvRows = []
+    csvRows.push(headers.join(','))
+
+    for (const row of dataToExport) {
+      const values = headers.map(header => {
+        const value = row[header]
+        return `"${value}"`
+      })
+      csvRows.push(values.join(','))
+    }
+
+    const csvString = csvRows.join('\n')
+    const blob = new Blob([csvString], { type: 'text/csv' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.setAttribute('hidden', '')
+    a.setAttribute('href', url)
+    a.setAttribute('download', 'providers.csv')
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+  }
+
+  // Handler untuk menambahkan provider baru
+  const handleAddProvider = () => {
+    setNewProvider({
+      name: "",
+      email: "",
+      specialty: "",
+      clinic: "Kinetic Rehab Center - Downtown",
+      clinicId: 1,
+      licenseNumber: "",
+      phone: ""
+    })
+    setShowAddModal(true)
+  }
+
+  // Handler untuk menyimpan provider baru
+  const handleSaveNewProvider = async () => {
+    // Validasi input
+    if (!newProvider.name || !newProvider.email || !newProvider.specialty || !newProvider.licenseNumber || !newProvider.phone) {
+      alert("Mohon isi semua kolom yang diperlukan")
+      return
+    }
+
+    try {
+      const response = await fetch('/api/providers', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newProvider),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Gagal menambahkan provider')
+      }
+
+      // Refresh data provider
+      const updatedProvidersResponse = await fetch('/api/providers')
+      const updatedProviders = await updatedProvidersResponse.json()
+      setProviders(updatedProviders)
+      
+      setShowAddModal(false)
+      alert("Provider baru berhasil ditambahkan")
+    } catch (error) {
+      console.error('Error adding provider:', error)
+      alert(error.message || 'Terjadi kesalahan saat menambahkan provider')
+    }
+  }
+
+  // Handler untuk melihat detail provider
+  const handleViewProviderDetails = (providerId) => {
+    const provider = providers.find(p => p.id === providerId)
+    if (provider) {
+      setSelectedProvider(provider)
+      setShowDetailsModal(true)
+    }
+  }
+
+  // Handler untuk mengedit provider
+  const handleEditProvider = (providerId) => {
+    const provider = providers.find(p => p.id === providerId)
+    if (provider) {
+      setEditingProvider({...provider})
+      setShowEditModal(true)
+    }
+  }
+
+  // Handler untuk menyimpan provider yang diedit
+  const handleSaveEditedProvider = async () => {
+    // Validasi input
+    if (!editingProvider.name || !editingProvider.email || !editingProvider.specialty || !editingProvider.licenseNumber || !editingProvider.phone) {
+      alert("Mohon isi semua kolom yang diperlukan")
+      return
+    }
+
+    try {
+      const response = await fetch('/api/providers', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(editingProvider),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Gagal mengupdate provider')
+      }
+
+      // Refresh data provider
+      const updatedProvidersResponse = await fetch('/api/providers')
+      const updatedProviders = await updatedProvidersResponse.json()
+      setProviders(updatedProviders)
+      
+      setShowEditModal(false)
+      setEditingProvider(null)
+      alert("Provider berhasil diupdate")
+    } catch (error) {
+      console.error('Error updating provider:', error)
+      alert(error.message || 'Terjadi kesalahan saat mengupdate provider')
+    }
+  }
+
+  // Handler untuk mengelola pasien
+  const handleManagePatients = (providerId) => {
+    const provider = providers.find(p => p.id === providerId)
+    if (provider) {
+      alert(`Mengarahkan ke manajemen pasien untuk ${provider.name}`)
+      // In a real app, you would use router.push to navigate
+      // router.push(`/dashboard/admin/providers/${providerId}/patients`)
+    }
+  }
+
+  // Handler untuk verifikasi provider
+  const handleVerifyProvider = async (providerId) => {
+    try {
+      const response = await fetch(`/api/providers/${providerId}/verify`, {
+        method: 'PATCH',
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Gagal memverifikasi provider')
+      }
+
+      // Refresh data provider
+      const updatedProvidersResponse = await fetch('/api/providers')
+      const updatedProviders = await updatedProvidersResponse.json()
+      setProviders(updatedProviders)
+      
+      alert("Provider berhasil diverifikasi")
+    } catch (error) {
+      console.error('Error verifying provider:', error)
+      alert(error.message || 'Terjadi kesalahan saat memverifikasi provider')
+    }
+  }
+
+  // Handler untuk menghapus provider
+  const handleDeleteProvider = async (providerId) => {
+    if (window.confirm("Apakah Anda yakin ingin menghapus provider ini?")) {
+      try {
+        const response = await fetch(`/api/providers/${providerId}`, {
+          method: 'DELETE',
+        })
+
+        const data = await response.json()
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Gagal menghapus provider')
+        }
+
+        // Refresh data provider
+        const updatedProvidersResponse = await fetch('/api/providers')
+        const updatedProviders = await updatedProvidersResponse.json()
+        setProviders(updatedProviders)
+        
+        alert("Provider berhasil dihapus")
+      } catch (error) {
+        console.error('Error deleting provider:', error)
+        alert(error.message || 'Terjadi kesalahan saat menghapus provider')
+      }
+    }
+  }
+
+  return (
+    <div className="flex h-screen bg-[#f0f4f9]">
+      {/* Sidebar */}
+      <div className="w-[78px] bg-gradient-to-b from-[#001a41] to-[#003366] flex flex-col items-center py-6">
+        <div className="mb-8">
+          <Image src="/kinetic-logo.png" alt="Kinetic Logo" width={60} height={60} />
+          <span className="text-white text-xs font-bold mt-1 block text-center">KINETIC</span>
+        </div>
+
+        <nav className="flex flex-col items-center space-y-6 flex-1">
+          <Link
+            href="/dashboard/admin"
+            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
+          >
+            <Home className="w-5 h-5" />
+          </Link>
+          <Link
+            href="/dashboard/admin/clinics"
+            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
+          >
+            <Building2 className="w-5 h-5" />
+          </Link>
+          <Link
+            href="/dashboard/admin/providers"
+            className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-white"
+          >
+            <UserCog className="w-5 h-5" />
+          </Link>
+          <Link
+            href="/dashboard/admin/licenses"
+            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
+          >
+            <Shield className="w-5 h-5" />
+          </Link>
+          <Link
+            href="/dashboard/admin/reports"
+            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
+          >
+            <LineChart className="w-5 h-5" />
+          </Link>
+          <Link
+            href="/dashboard/admin/alerts"
+            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
+          >
+            <Bell className="w-5 h-5" />
+          </Link>
+        </nav>
+
+        <div className="mt-auto space-y-4">
+          <Link
+            href="/dashboard/admin/profile"
+            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
+          >
+            <User className="w-5 h-5" />
+          </Link>
+          <Link
+            href="/dashboard/admin/settings"
+            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
+          >
+            <Settings className="w-5 h-5" />
+          </Link>
+          <button
+            onClick={logout}
+            className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center text-white"
+          >
+            <LogOut className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 p-8 overflow-auto">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-2xl font-bold mb-8">Provider Management</h1>
+          
+          {/* Search and Filter */}
+          <div className="flex flex-wrap gap-4 mb-6">
+            <div className="relative flex-1 min-w-[300px]">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <Input
+                placeholder="Search providers..."
+                className="pl-10"
+                value={searchQuery}
+                onChange={handleSearch}
+              />
+            </div>
+            <Button variant="outline" onClick={handleFilter}>
+              <Filter className="mr-2 h-4 w-4" /> Filter
+            </Button>
+            <Button variant="outline" onClick={handleExport}>
+              <Download className="mr-2 h-4 w-4" /> Export
+            </Button>
+            <Button onClick={handleAddProvider}>
+              <Plus className="mr-2 h-4 w-4" /> Add Provider
+            </Button>
+          </div>
+          
+          {/* Filter Panel */}
+          {filterOpen && (
+            <div className="bg-white rounded-lg p-4 mb-6 shadow-sm">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="specialty-filter" className="mb-2 block">Specialty</Label>
+                  <Select value={specialtyFilter} onValueChange={setSpecialtyFilter}>
+                    <SelectTrigger id="specialty-filter">
+                      <SelectValue placeholder="All Specialties" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">All Specialties</SelectItem>
+                      {specialties.map((specialty, index) => (
+                        <SelectItem key={index} value={specialty}>{specialty}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="clinic-filter" className="mb-2 block">Clinic</Label>
+                  <Select value={clinicFilter} onValueChange={setClinicFilter}>
+                    <SelectTrigger id="clinic-filter">
+                      <SelectValue placeholder="All Clinics" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">All Clinics</SelectItem>
+                      {clinics.map((clinic, index) => (
+                        <SelectItem key={index} value={clinic}>{clinic}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {/* Status Tabs */}
+          <Tabs defaultValue="all" className="mb-6" onValueChange={setStatusFilter}>
+            <TabsList className="bg-white">
+              <TabsTrigger value="all">All Providers</TabsTrigger>
+              <TabsTrigger value="active">Active</TabsTrigger>
+              <TabsTrigger value="pending">Pending</TabsTrigger>
+              <TabsTrigger value="inactive">Inactive</TabsTrigger>
+            </TabsList>
+          </Tabs>
+          
+          {/* Provider List */}
+          {loading ? (
+            <div className="bg-white rounded-lg p-8 text-center">
+              <div className="mx-auto w-16 h-16 border-4 border-t-blue-500 border-b-blue-700 border-l-blue-500 border-r-blue-700 rounded-full animate-spin mb-4"></div>
+              <h3 className="text-lg font-medium mb-2">Memuat data provider...</h3>
+              <p className="text-gray-500">Mohon tunggu sebentar</p>
+            </div>
+          ) : error ? (
+            <div className="bg-white rounded-lg p-8 text-center">
+              <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                <AlertCircle className="h-8 w-8 text-red-500" />
+              </div>
+              <h3 className="text-lg font-medium mb-2">Terjadi kesalahan</h3>
+              <p className="text-gray-500 mb-4">{error}</p>
+              <Button 
+                variant="outline" 
+                onClick={() => window.location.reload()}
+              >
+                Coba lagi
+              </Button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredProviders.map((provider) => (
+                <Card key={provider.id} className="overflow-hidden bg-white">
+                  <CardHeader className="pb-2">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center">
+                        <div className="mr-4">
+                          <Image
+                            src={provider.image || "/placeholder-user.jpg"}
+                            alt={provider.name}
+                            width={60}
+                            height={60}
+                            className="rounded-full object-cover"
+                          />
+                        </div>
+                        <div>
+                          <CardTitle className="text-lg">{provider.name}</CardTitle>
+                          <div className="flex items-center mt-1">
+                            <Badge 
+                              className={`
+                                ${provider.status === "active" ? "bg-green-100 text-green-800" : ""}
+                                ${provider.status === "pending" ? "bg-yellow-100 text-yellow-800" : ""}
+                                ${provider.status === "inactive" ? "bg-gray-100 text-gray-800" : ""}
+                              `}
+                            >
+                              {provider.status.charAt(0).toUpperCase() + provider.status.slice(1)}
+                            </Badge>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardHeader>
+                <CardContent className="pb-2">
+                  <div className="space-y-2">
+                    <div className="flex items-center text-sm">
+                      <Award className="h-4 w-4 mr-2 text-gray-400" />
+                      <span>{provider.specialty}</span>
+                    </div>
+                    <div className="flex items-center text-sm">
+                      <Building2 className="h-4 w-4 mr-2 text-gray-400" />
+                      <Link href="#" className="text-blue-600 hover:underline">
+                        {provider.clinic}
+                      </Link>
+                    </div>
+                    <div className="flex items-center text-sm">
+                      <Mail className="h-4 w-4 mr-2 text-gray-400" />
+                      <span>{provider.email}</span>
+                    </div>
+                    <div className="flex items-center text-sm">
+                      <Phone className="h-4 w-4 mr-2 text-gray-400" />
+                      <span>{provider.phone}</span>
+                    </div>
+                    <div className="flex items-center text-sm">
+                      <FileCheck className="h-4 w-4 mr-2 text-gray-400" />
+                      <span>License: {provider.licenseNumber}</span>
+                      <span className="ml-2 text-xs">
+                        (Expires: {new Date(provider.licenseExpiry).toLocaleDateString()})
+                        {new Date(provider.licenseExpiry) < new Date(Date.now() + 90 * 24 * 60 * 60 * 1000) && (
+                          <span className="ml-1 text-red-500 font-medium">Expiring soon</span>
+                        )}
+                      </span>
+                    </div>
+                    <div className="flex items-center text-sm">
+                      <User className="h-4 w-4 mr-2 text-gray-400" />
+                      <span>{provider.patients} active patients</span>
+                    </div>
+                  </div>
+                </CardContent>
+                <CardFooter className="flex flex-wrap gap-2 pt-2">
+                  {provider.status === "pending" && (
+                    <Button 
+                      size="sm" 
+                      className="bg-amber-500 hover:bg-amber-600"
+                      onClick={() => handleVerifyProvider(provider.id)}
+                    >
+                      <CheckCircle className="mr-1 h-4 w-4" /> Verify Provider
+                    </Button>
+                  )}
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={() => handleViewProviderDetails(provider.id)}
+                  >
+                    <Info className="mr-1 h-4 w-4" /> View Details
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={() => handleEditProvider(provider.id)}
+                  >
+                    <Edit className="mr-1 h-4 w-4" /> Edit Provider
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={() => handleManagePatients(provider.id)}
+                  >
+                    <User className="mr-1 h-4 w-4" /> Manage Patients
+                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button size="sm" variant="ghost">
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem 
+                        className="text-red-600 cursor-pointer"
+                        onClick={() => handleDeleteProvider(provider.id)}
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" /> Delete Provider
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+          
+          {!loading && !error && filteredProviders.length === 0 && (
+            <div className="bg-white rounded-lg p-8 text-center">
+              <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                <Search className="h-8 w-8 text-gray-400" />
+              </div>
+              <h3 className="text-lg font-medium mb-2">No providers found</h3>
+              <p className="text-gray-500 mb-4">Try adjusting your search or filter criteria</p>
+              <Button variant="outline" onClick={() => {
+                setSearchQuery("")
+                setStatusFilter("all")
+                setSpecialtyFilter("")
+                setClinicFilter("")
+              }}>
+                Clear all filters
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+      
+      {/* Add Provider Modal */}
+      <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Add New Provider</DialogTitle>
+            <DialogDescription>
+              Enter the details of the new healthcare provider below.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="col-span-2">
+                <Label htmlFor="name" className="mb-2 block">Full Name</Label>
+                <Input
+                  id="name"
+                  value={newProvider.name}
+                  onChange={(e) => setNewProvider({...newProvider, name: e.target.value})}
+                  placeholder="Dr. John Smith"
+                />
+              </div>
+              <div className="col-span-2">
+                <Label htmlFor="email" className="mb-2 block">Email Address</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={newProvider.email}
+                  onChange={(e) => setNewProvider({...newProvider, email: e.target.value})}
+                  placeholder="john.smith@kineticrehab.com"
+                />
+              </div>
+              <div>
+                <Label htmlFor="specialty" className="mb-2 block">Specialty</Label>
+                <Select 
+                  value={newProvider.specialty} 
+                  onValueChange={(value) => setNewProvider({...newProvider, specialty: value})}
+                >
+                  <SelectTrigger id="specialty">
+                    <SelectValue placeholder="Select specialty" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {specialties.map((specialty, index) => (
+                      <SelectItem key={index} value={specialty}>{specialty}</SelectItem>
+                    ))}
+                    <SelectItem value="Physical Therapy">Physical Therapy</SelectItem>
+                    <SelectItem value="Orthopedic Rehabilitation">Orthopedic Rehabilitation</SelectItem>
+                    <SelectItem value="Sports Rehabilitation">Sports Rehabilitation</SelectItem>
+                    <SelectItem value="Neurological Rehabilitation">Neurological Rehabilitation</SelectItem>
+                    <SelectItem value="Pediatric Rehabilitation">Pediatric Rehabilitation</SelectItem>
+                    <SelectItem value="Geriatric Rehabilitation">Geriatric Rehabilitation</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="clinic" className="mb-2 block">Clinic</Label>
+                <Select 
+                  value={newProvider.clinic} 
+                  onValueChange={(value) => {
+                    // Set clinic and determine clinicId based on clinic name
+                    let clinicId = 1; // Default
+                    if (value === "Kinetic Rehab Center - Uptown") clinicId = 2;
+                    if (value === "Kinetic Rehab Center - Westside") clinicId = 3;
+                    if (value === "Kinetic Rehab Center - Eastside") clinicId = 4;
+                    setNewProvider({...newProvider, clinic: value, clinicId});
+                  }}
+                >
+                  <SelectTrigger id="clinic">
+                    <SelectValue placeholder="Select clinic" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {clinics.map((clinic, index) => (
+                      <SelectItem key={index} value={clinic}>{clinic}</SelectItem>
+                    ))}
+                    <SelectItem value="Kinetic Rehab Center - Downtown">Kinetic Rehab Center - Downtown</SelectItem>
+                    <SelectItem value="Kinetic Rehab Center - Uptown">Kinetic Rehab Center - Uptown</SelectItem>
+                    <SelectItem value="Kinetic Rehab Center - Westside">Kinetic Rehab Center - Westside</SelectItem>
+                    <SelectItem value="Kinetic Rehab Center - Eastside">Kinetic Rehab Center - Eastside</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="licenseNumber" className="mb-2 block">License Number</Label>
+                <Input
+                  id="licenseNumber"
+                  value={newProvider.licenseNumber}
+                  onChange={(e) => setNewProvider({...newProvider, licenseNumber: e.target.value})}
+                  placeholder="PT12345"
+                />
+              </div>
+              <div>
+                <Label htmlFor="phone" className="mb-2 block">Phone Number</Label>
+                <Input
+                  id="phone"
+                  value={newProvider.phone}
+                  onChange={(e) => setNewProvider({...newProvider, phone: e.target.value})}
+                  placeholder="(555) 123-4567"
+                />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAddModal(false)}>Cancel</Button>
+            <Button onClick={handleSaveNewProvider}>Save Provider</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Edit Provider Modal */}
+      <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Edit Provider</DialogTitle>
+            <DialogDescription>
+              Update the provider's information below.
+            </DialogDescription>
+          </DialogHeader>
+          {editingProvider && (
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="col-span-2">
+                  <Label htmlFor="edit-name" className="mb-2 block">Full Name</Label>
+                  <Input
+                    id="edit-name"
+                    value={editingProvider.name}
+                    onChange={(e) => setEditingProvider({...editingProvider, name: e.target.value})}
+                  />
+                </div>
+                <div className="col-span-2">
+                  <Label htmlFor="edit-email" className="mb-2 block">Email Address</Label>
+                  <Input
+                    id="edit-email"
+                    type="email"
+                    value={editingProvider.email}
+                    onChange={(e) => setEditingProvider({...editingProvider, email: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-specialty" className="mb-2 block">Specialty</Label>
+                  <Select 
+                    value={editingProvider.specialty} 
+                    onValueChange={(value) => setEditingProvider({...editingProvider, specialty: value})}
+                  >
+                    <SelectTrigger id="edit-specialty">
+                      <SelectValue placeholder="Select specialty" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {specialties.map((specialty, index) => (
+                        <SelectItem key={index} value={specialty}>{specialty}</SelectItem>
+                      ))}
+                      <SelectItem value="Physical Therapy">Physical Therapy</SelectItem>
+                      <SelectItem value="Orthopedic Rehabilitation">Orthopedic Rehabilitation</SelectItem>
+                      <SelectItem value="Sports Rehabilitation">Sports Rehabilitation</SelectItem>
+                      <SelectItem value="Neurological Rehabilitation">Neurological Rehabilitation</SelectItem>
+                      <SelectItem value="Pediatric Rehabilitation">Pediatric Rehabilitation</SelectItem>
+                      <SelectItem value="Geriatric Rehabilitation">Geriatric Rehabilitation</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="edit-clinic" className="mb-2 block">Clinic</Label>
+                  <Select 
+                    value={editingProvider.clinic} 
+                    onValueChange={(value) => {
+                      // Set clinic and determine clinicId based on clinic name
+                      let clinicId = 1; // Default
+                      if (value === "Kinetic Rehab Center - Uptown") clinicId = 2;
+                      if (value === "Kinetic Rehab Center - Westside") clinicId = 3;
+                      if (value === "Kinetic Rehab Center - Eastside") clinicId = 4;
+                      setEditingProvider({...editingProvider, clinic: value, clinicId});
+                    }}
+                  >
+                    <SelectTrigger id="edit-clinic">
+                      <SelectValue placeholder="Select clinic" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {clinics.map((clinic, index) => (
+                        <SelectItem key={index} value={clinic}>{clinic}</SelectItem>
+                      ))}
+                      <SelectItem value="Kinetic Rehab Center - Downtown">Kinetic Rehab Center - Downtown</SelectItem>
+                      <SelectItem value="Kinetic Rehab Center - Uptown">Kinetic Rehab Center - Uptown</SelectItem>
+                      <SelectItem value="Kinetic Rehab Center - Westside">Kinetic Rehab Center - Westside</SelectItem>
+                      <SelectItem value="Kinetic Rehab Center - Eastside">Kinetic Rehab Center - Eastside</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="edit-licenseNumber" className="mb-2 block">License Number</Label>
+                  <Input
+                    id="edit-licenseNumber"
+                    value={editingProvider.licenseNumber}
+                    onChange={(e) => setEditingProvider({...editingProvider, licenseNumber: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-phone" className="mb-2 block">Phone Number</Label>
+                  <Input
+                    id="edit-phone"
+                    value={editingProvider.phone}
+                    onChange={(e) => setEditingProvider({...editingProvider, phone: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-status" className="mb-2 block">Status</Label>
+                  <Select 
+                    value={editingProvider.status} 
+                    onValueChange={(value) => setEditingProvider({...editingProvider, status: value})}
+                  >
+                    <SelectTrigger id="edit-status">
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="active">Active</SelectItem>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="inactive">Inactive</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="edit-licenseExpiry" className="mb-2 block">License Expiry</Label>
+                  <Input
+                    id="edit-licenseExpiry"
+                    type="date"
+                    value={new Date(editingProvider.licenseExpiry).toISOString().split('T')[0]}
+                    onChange={(e) => setEditingProvider({...editingProvider, licenseExpiry: new Date(e.target.value).toISOString()})}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowEditModal(false)}>Cancel</Button>
+            <Button onClick={handleSaveEditedProvider}>Save Changes</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Provider Details Modal */}
+      <Dialog open={showDetailsModal} onOpenChange={setShowDetailsModal}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Provider Details</DialogTitle>
+            <DialogDescription>
+              Detailed information about the selected provider.
+            </DialogDescription>
+          </DialogHeader>
+          {selectedProvider && (
+            <div className="space-y-6">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0">
+                  <Image
+                    src={selectedProvider.image || "/placeholder-user.jpg"}
+                    alt={selectedProvider.name}
+                    width={100}
+                    height={100}
+                    className="rounded-full object-cover"
+                  />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-semibold">{selectedProvider.name}</h3>
+                  <p className="text-gray-500">{selectedProvider.specialty}</p>
+                  <div className="mt-2">
+                    <Badge 
+                      className={`
+                        ${selectedProvider.status === "active" ? "bg-green-100 text-green-800" : ""}
+                        ${selectedProvider.status === "pending" ? "bg-yellow-100 text-yellow-800" : ""}
+                        ${selectedProvider.status === "inactive" ? "bg-gray-100 text-gray-800" : ""}
+                      `}
+                    >
+                      {selectedProvider.status.charAt(0).toUpperCase() + selectedProvider.status.slice(1)}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-b py-4">
+                <div>
+                  <h4 className="text-sm font-medium text-gray-500 mb-1">Contact Information</h4>
+                  <div className="space-y-2">
+                    <div className="flex items-center">
+                      <Mail className="h-4 w-4 mr-2 text-gray-400" />
+                      <span>{selectedProvider.email}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Phone className="h-4 w-4 mr-2 text-gray-400" />
+                      <span>{selectedProvider.phone}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Building2 className="h-4 w-4 mr-2 text-gray-400" />
+                      <span>{selectedProvider.clinic}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <h4 className="text-sm font-medium text-gray-500 mb-1">License Information</h4>
+                  <div className="space-y-2">
+                    <div className="flex items-center">
+                      <FileCheck className="h-4 w-4 mr-2 text-gray-400" />
+                      <span>License: {selectedProvider.licenseNumber}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Calendar className="h-4 w-4 mr-2 text-gray-400" />
+                      <span>Expires: {new Date(selectedProvider.licenseExpiry).toLocaleDateString()}</span>
+                      {new Date(selectedProvider.licenseExpiry) < new Date(Date.now() + 90 * 24 * 60 * 60 * 1000) && (
+                        <span className="ml-2 text-red-500 font-medium">Expiring soon</span>
+                      )}
+                    </div>
+                    <div className="flex items-center">
+                      <Shield className="h-4 w-4 mr-2 text-gray-400" />
+                      <span>Verification: </span>
+                      {selectedProvider.verificationStatus === "verified" ? (
+                        <span className="text-green-600 font-medium ml-1 flex items-center">
+                          <CheckCircle className="h-4 w-4 mr-1" /> Verified
+                        </span>
+                      ) : (
+                        <span className="text-yellow-600 font-medium ml-1 flex items-center">
+                          <Clock className="h-4 w-4 mr-1" /> Pending
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-gray-50 p-3 rounded-lg">
+                  <div className="text-2xl font-bold">{selectedProvider.patients}</div>
+                  <div className="text-sm text-gray-500">Active Patients</div>
+                </div>
+                <div className="bg-gray-50 p-3 rounded-lg">
+                  <div className="text-2xl font-bold">{new Date(selectedProvider.joinDate).toLocaleDateString()}</div>
+                  <div className="text-sm text-gray-500">Join Date</div>
+                </div>
+                <div className="bg-gray-50 p-3 rounded-lg">
+                  <div className="text-2xl font-bold">
+                    {Math.floor((new Date() - new Date(selectedProvider.joinDate)) / (1000 * 60 * 60 * 24 * 30))} months
+                  </div>
+                  <div className="text-sm text-gray-500">Account Age</div>
+                </div>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            {selectedProvider && selectedProvider.status === "pending" && (
+              <Button 
+                className="bg-amber-500 hover:bg-amber-600 mr-auto"
+                onClick={() => {
+                  setShowDetailsModal(false);
+                  handleVerifyProvider(selectedProvider.id);
+                }}
+              >
+                <CheckCircle className="mr-2 h-4 w-4" /> Verify Provider
+              </Button>
+            )}
+            <Button variant="outline" onClick={() => setShowDetailsModal(false)}>Close</Button>
+            {selectedProvider && (
+              <Button 
+                className="bg-[#014585] hover:bg-[#013a70]"
+                onClick={() => {
+                  setShowDetailsModal(false);
+                  handleEditProvider(selectedProvider.id);
+                }}
+              >
+                <Edit className="mr-2 h-4 w-4" /> Edit Provider
+              </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  )
+}

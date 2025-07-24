@@ -13,8 +13,8 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 210 100% 26%; /* #014585 equivalent */
+    --primary-foreground: 0 0% 100%; /* Pure white */
 
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
@@ -45,8 +45,8 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 210 100% 26%; /* #014585 equivalent */
+    --primary-foreground: 0 0% 100%; /* Pure white */
 
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
@@ -71,10 +71,10 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-black;
+    @apply bg-background text-white;
   }
   p, h1, h2, h3, h4, h5, h6, span, div, a, button, input, textarea, select, label {
-    @apply text-black;
+    @apply text-white;
   }
 }
 
@@ -96,6 +96,42 @@
   opacity: 0;
   transform: translateY(-20px);
   transition: opacity 300ms, transform 300ms;
+}
+
+/* Text Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.animate-slideIn {
+  animation: slideIn 0.5s ease-in-out;
+}
+
+/* Interactive Hover Effects */
+.hover-lift {
+  transition: transform 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-5px);
+}
+
+.hover-glow {
+  transition: text-shadow 0.3s ease;
+}
+
+.hover-glow:hover {
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
 }
 
 /* Video Call Styles */
@@ -251,6 +287,47 @@ p, h1, h2, h3, h4, h5, h6, span, div, a, button, input, textarea, select, label,
 .bg-gradient-to-b div,
 .bg-gradient-to-b a,
 .bg-gradient-to-b button,
-.text-white {
+.text-white,
+/* Button and menu white text */
+.bg-\[\#014585\] *,
+.bg-\[\#013a70\] *,
+.bg-blue-600 *,
+.bg-blue-500 *,
+.bg-primary *,
+button.bg-\[\#014585\],
+button.bg-\[\#013a70\],
+button.bg-blue-600,
+button.bg-blue-500,
+button.bg-primary,
+/* Sub-menu and dropdown white text */
+[data-radix-collection-item] *,
+.dropdown-menu-item *,
+.menu-item *,
+.sub-menu *,
+/* Sidebar and navigation white text */
+.sidebar *,
+.navigation *,
+.nav-item *,
+/* Dark background containers */
+.bg-gray-900 *,
+.bg-gray-800 *,
+.bg-slate-900 *,
+.bg-slate-800 * {
+  color: white !important;
+}
+
+/* Specific button styling for white text */
+button[class*="bg-[#014585]"],
+button[class*="bg-[#013a70]"],
+button[class*="bg-blue"],
+button[class*="bg-primary"] {
+  color: white !important;
+}
+
+/* Menu and dropdown styling for white text */
+[role="menuitem"],
+[role="option"],
+.dropdown-content *,
+.menu-content * {
   color: white !important;
 }

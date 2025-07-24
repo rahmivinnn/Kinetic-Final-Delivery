@@ -1,30 +1,116 @@
-# Recreate Figma design
+# Kinetic Rehab Platform
 
-*Automatically synced with your [v0.dev](https://v0.dev) deployments*
-
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/rahmivinnns-projects/v0-recreate-figma-design)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.dev-black?style=for-the-badge)](https://v0.dev/chat/projects/ugXYksfUJ0t)
+[![Deployed on Fly.io](https://img.shields.io/badge/Deployed%20on-Fly.io-purple?style=for-the-badge&logo=fly-dot-io)](https://kinetic-rehab.fly.dev)
 
 ## Overview
 
-This repository will stay in sync with your deployed chats on [v0.dev](https://v0.dev).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.dev](https://v0.dev).
+Kinetic Rehab is a comprehensive physiotherapy platform that combines AI-powered movement analysis with personalized rehabilitation programs. The platform enables remote monitoring, real-time feedback, and seamless communication between patients and physiotherapists.
+
+## Features
+
+- **AI-Powered Movement Analysis**: Real-time pose estimation and movement tracking
+- **Personalized Rehabilitation Programs**: Customized exercise routines based on patient needs
+- **Video Library**: Store and review exercise demonstrations and patient submissions
+- **Progress Tracking**: Monitor recovery metrics and improvement over time
+- **Secure Messaging**: Direct communication between patients and physiotherapists
+- **Appointment Scheduling**: Book and manage virtual consultation sessions
+- **Feedback System**: Detailed analysis and recommendations for exercise improvement
 
 ## Deployment
 
-Your project is live at:
+The project is deployed on Fly.io at:
 
-**[https://vercel.com/rahmivinnns-projects/v0-recreate-figma-design](https://vercel.com/rahmivinnns-projects/v0-recreate-figma-design)**
+**[https://kinetic-rehab.fly.dev](https://kinetic-rehab.fly.dev)**
 
-## Build your app
+### Manual Deployment
 
-Continue building your app on:
+To deploy manually to Fly.io:
 
-**[https://v0.dev/chat/projects/ugXYksfUJ0t](https://v0.dev/chat/projects/ugXYksfUJ0t)**
+1. Install the Fly.io CLI:
+   ```bash
+   # On macOS
+   brew install flyctl
+   
+   # On Linux
+   curl -L https://fly.io/install.sh | sh
+   
+   # On Windows (using PowerShell)
+   iwr https://fly.io/install.ps1 -useb | iex
+   ```
 
-## How It Works
+2. Login to Fly.io:
+   ```bash
+   flyctl auth login
+   ```
 
-1. Create and modify your project using [v0.dev](https://v0.dev)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+3. Deploy the application:
+   ```bash
+   ./deploy.sh
+   ```
+   
+   Or use the flyctl command directly:
+   ```bash
+   flyctl deploy
+   ```
+
+### GitHub Actions Deployment
+
+The project is configured for continuous deployment using GitHub Actions:
+
+1. Push your code to the GitHub repository:
+   ```bash
+   git remote add origin https://github.com/rahmivinnn/Kinetic-Final-Delivery.git
+   git push -u origin main
+   ```
+
+2. Set up a Fly.io API token in GitHub:
+   - Generate a token: `flyctl tokens create deploy -x 999999h`
+   - Add the token as a repository secret named `FLY_API_TOKEN` in your GitHub repository settings
+
+3. The GitHub Actions workflow will automatically deploy your application when you push to the main branch
+
+## Local Development
+
+### Prerequisites
+
+- Node.js (v18 or later)
+- npm or pnpm
+
+### Setup
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/rahmivinnn/Kinetic-Final-Delivery.git
+   cd Kinetic-Final-Delivery
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   # or
+   pnpm install
+   ```
+
+3. Start the development server:
+   ```bash
+   npm run dev
+   # or
+   pnpm dev
+   ```
+
+4. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
+
+### Building for Production
+
+```bash
+npm run build
+# or
+pnpm build
+```
+
+## Technologies
+
+- **Frontend**: Next.js, React, Tailwind CSS
+- **AI**: TensorFlow.js for pose estimation
+- **Deployment**: Fly.io
+- **CI/CD**: GitHub Actions

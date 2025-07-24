@@ -58,8 +58,8 @@ export default function UploadPage() {
       {/* Sidebar */}
       <div className="w-[78px] bg-gradient-to-b from-[#001a41] to-[#003366] flex flex-col items-center py-6">
         <div className="mb-8">
-          <Image src="/kinetic logo.png" alt="Kinetic Logo" width={40} height={40} />
-          <span className="text-white text-xs font-bold mt-1 block text-center">KINETIC</span>
+          <Image src="/kinetic-logo.png" alt="Kinetic Logo" width={40} height={40} />
+          
         </div>
 
         <nav className="flex flex-col items-center space-y-6 flex-1">
@@ -129,14 +129,14 @@ export default function UploadPage() {
           {/* Breadcrumb */}
           <div className="flex items-center text-sm text-gray-500 mb-4">
             <Link href="/dashboard" className="hover:text-gray-700">
-              Home
+              Beranda
             </Link>
             <span className="mx-2">›</span>
             <Link href="/video-library" className="hover:text-gray-700">
-              Video Library
+              Pustaka Video
             </Link>
             <span className="mx-2">›</span>
-            <span className="text-gray-700">Upload</span>
+            <span className="text-gray-700">Unggah</span>
           </div>
 
           <h1 className="text-2xl font-bold text-[#111827] mb-8">Upload Exercise Video</h1>
@@ -233,18 +233,18 @@ export default function UploadPage() {
                       </Button>
                     </Link>
                     <Button
-                      type="submit"
-                      className="bg-[#014585] hover:bg-[#013a70]"
-                      disabled={!selectedFile || !exerciseType || !title || isUploading}
-                    >
-                      {isUploading ? (
-                        <>
-                          <span className="animate-spin mr-2">⟳</span> Uploading...
-                        </>
-                      ) : (
-                        <>Upload Video</>
-                      )}
-                    </Button>
+                        type="submit"
+                        className="bg-[#014585] hover:bg-[#013a70]"
+                        disabled={!selectedFile || !exerciseType || !title || isUploading}
+                      >
+                        {isUploading ? (
+                          <>
+                            <span className="animate-spin mr-2">⟳</span> Uploading...
+                          </>
+                        ) : (
+                          <>Upload Video</>
+                        )}
+                      </Button>
                   </div>
                 </form>
               </TabsContent>
@@ -268,22 +268,22 @@ export default function UploadPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="title-record">Video Title</Label>
-                    <Input id="title-record" placeholder="E.g., Morning Knee Exercises - May 15" />
+                    <Label htmlFor="title-record">Judul Video</Label>
+                    <Input id="title-record" placeholder="Contoh: Latihan Lutut Pagi - 15 Mei" />
                   </div>
 
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center aspect-video flex flex-col items-center justify-center">
                     <Camera className="h-10 w-10 text-gray-400 mb-2" />
-                    <p className="text-sm font-medium">Camera access required</p>
-                    <p className="text-xs text-gray-500 mb-4">Please allow camera access to record your exercise</p>
-                    <Button className="bg-[#014585] hover:bg-[#013a70]">Start Recording</Button>
+                    <p className="text-sm font-medium">Akses kamera diperlukan</p>
+                    <p className="text-xs text-gray-500 mb-4">Mohon izinkan akses kamera untuk merekam latihan Anda</p>
+                    <Button className="bg-[#014585] hover:bg-[#013a70]">Mulai Merekam</Button>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="notes-record">Notes for Your Therapist (Optional)</Label>
+                    <Label htmlFor="notes-record">Catatan untuk Terapis Anda (Opsional)</Label>
                     <Textarea
                       id="notes-record"
-                      placeholder="Add any notes about your exercise performance, pain levels, or questions"
+                      placeholder="Tambahkan catatan tentang performa latihan, tingkat nyeri, atau pertanyaan"
                     />
                   </div>
                 </div>
@@ -292,12 +292,12 @@ export default function UploadPage() {
           </div>
 
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
-            <p className="font-medium mb-1">Tips for Better Analysis:</p>
+            <p className="font-medium mb-1">Tips untuk Analisis yang Lebih Baik:</p>
             <ul className="list-disc pl-5 space-y-1">
-              <li>Ensure good lighting in your recording area</li>
-              <li>Position your camera to capture your full body during the exercise</li>
-              <li>Wear clothing that makes it easy to see your movements</li>
-              <li>Try to keep a neutral background without distractions</li>
+              <li>Pastikan pencahayaan yang baik di area perekaman Anda</li>
+              <li>Posisikan kamera Anda untuk menangkap seluruh tubuh selama latihan</li>
+              <li>Kenakan pakaian yang memudahkan untuk melihat gerakan Anda</li>
+              <li>Usahakan untuk menjaga latar belakang netral tanpa gangguan</li>
             </ul>
           </div>
         </div>
