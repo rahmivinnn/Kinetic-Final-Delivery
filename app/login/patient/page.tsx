@@ -18,7 +18,7 @@ export default function PatientLoginPage() {
   // Login form state
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [error, setLoginError] = useState("")
+  const [loginError, setLoginError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
   // Register form state
